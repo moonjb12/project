@@ -11,30 +11,49 @@
 	import BiChevronRight from "svelte-icons-pack/bi/BiChevronRight";
 	import BiChevronLeft from "svelte-icons-pack/bi/BiChevronLeft";
 	import CgChevronDown from "svelte-icons-pack/cg/CgChevronDown";
-	import { Button, Dropdown, DropdownItem } from 'flowbite-svelte';
+	import CgArrowRight from "svelte-icons-pack/cg/CgArrowRight";
+	import BiCheck from "svelte-icons-pack/bi/BiCheck";
+	import AiFillMinusCircle from "svelte-icons-pack/ai/AiFillMinusCircle";
+	import BiSolidMinusCircle from "svelte-icons-pack/bi/BiSolidMinusCircle";
+	import { Button, GradientButton, Dropdown, DropdownItem, Modal } from 'flowbite-svelte';
 	import { DarkMode } from 'flowbite-svelte';
 
 
-	let main_data = [{pos: 0, screen: 'home'}, {pos: 1, screen: 'device'}, {pos: 2, screen: 'setting'}, {pos: 3, screen: 'name'}];
+	let main_data = [{pos: 0, screen: 'home'}, {pos: 1, screen: 'device'}, {pos: 2, screen: 'setting'}, {pos: 3, screen: 'name'}, {pos: 4, screen: 'add'}];
 	let position = 0;
-	let duration = 200;
+	let duration = 400;
 	let slideWidth;
 
 	let setting_data = [{pos: 0, screen: 'main'}, {pos: 1, screen: 'lang'}, {pos: 2, screen: 'theme'}];
 	let setting_position = 0;
 	let setting_slideWidth;
 
-	let battery_list = [{name: '한', charge: 100}, {name : '두글', charge: 75}, {name: '세글자', charge: 50}, {name: '네글자네', charge: 25}, {name: '다섯글자다', charge: 0}, {name: '여섯글자여섯', charge: 63}];
+	let battery_list = [{name: '배터리 1', charge: 100}, {name : '배터리 2', charge: 75}, {name: '배터리ㅣ3', charge: 50}, {name: '4 배터리', charge: 25}, {name: '555 배', charge: 0}, {name: '배6터 리', charge: 63}];
 
 	let battery_count = `배터리 ${battery_list.length + 1}`;
+	let charge_count = 0;
+
+	let adding_battery = {name: '', charge: 0};
 
 	let selected_screen = main_data[0]['screen'];
-	let selected_battery = battery_list[4];
+	let selected_battery = battery_list[0];
+
+	let prev_position = 0;
+
+	let reset_adding_battery = () => {
+		adding_battery = {name: '', charge: 0};
+		battery_count = `배터리 ${battery_list.length + 1}`;
+		charge_count = 0;
+	}
 
 	let dark = false;
+
+	let editing = false;
+
+	let popupmodal = false;
 </script>
 
-<!-- <div class="cutton"style="left: 390px"/> -->
+<div class="cutton"style="left: 390px"/>
 
 <div>
 	{#each main_data as d}
@@ -62,7 +81,11 @@
 				<h1 class="condition-number">{`${selected_battery.charge}%`}</h1>
 			</div>
 		</div>
-		<button on:click={() => position = 3}>
+		<button on:click={() => {
+			prev_position = 0;
+			position = 3;
+			reset_adding_battery();
+		}} style="width: 96px; height: 96px;">
 			<div class="add"style="background: linear-gradient(120deg, hsl({selected_battery.charge + 60}, 100%, 50%) 0%, hsl({selected_battery.charge}, 100%, 50%) 100%);">
 				<Icon src={FiPlus} size="70" color=white className="plus_stick"/>
 				<h1 class="push_message">버튼을 눌러 기기 추가</h1>
@@ -71,22 +94,40 @@
 	{:else if d.pos === 1}
 	<!-- ----------------------------------------------------------------------디바이스------------------------------------------------------------------------------------ -->
 		<div>
+			<Modal bind:open={popupmodal} size="xs" autoclose>
+				<div class="text-center">
+					<h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">이 배터리를 삭제하시겠습니까?</h3>
+					<Button on:click={() => battery_list.splice(0, 1)} color="blue" class="mr-2">확인</Button>
+					<Button on:click={() => console.log(popupmodal)} color="blue" outline>취소</Button>
+				</div>
+			</Modal>
 			<h1 class="title"style="margin-left: 40px; margin-top: 50px;">디바이스</h1>
-			<Icon src={FiPlus} size="30" className="icon2 plus" />
-			<Icon src={FiMoreVertical} className="icon2 more menu" />
+			<button on:click={() => {
+				prev_position = 1;
+				position = 3;
+			}}>
+				<Icon src={FiPlus} size="30" className="icon2 plus" />
+			</button>
+			<Icon src={FiMoreVertical} size="30" className="icon2 more menu" />
 			<Dropdown>
-				<DropdownItem class="menuitem">편집</DropdownItem>
+				<DropdownItem on:click={() => editing = !editing} class="menuitem">편집</DropdownItem>
 			</Dropdown>
 		</div>
 		<div class="scroll">
 		{#each battery_list as b}
 			<div class="battery_box">
 				<h1 class="battery_name"style="text-align: left; margin-left: 20px; top: 10px;">{b.name}</h1>
+				{#if !editing}
 				<Icon src={FiMoreVertical} size="20" className="battery_more menu"/>
 				<Dropdown>
 					<DropdownItem class="menuitem">이름바꾸기</DropdownItem>
-					<DropdownItem class="menuitem"style="color: red;">삭제</DropdownItem>
+					<DropdownItem on:click={() => (popupmodal = true)} class="menuitem"style="color: red;">삭제</DropdownItem>
 				</Dropdown>
+				{:else}
+				<button on:click={() => (popupmodal = true)} style="width: 20px; height: 22px;	left: 400px;">
+					<Icon src={BiSolidMinusCircle} size="22" color="red" className="del_button"/>
+				</button>
+				{/if}
 				<h1 class="battery_text">충전 상태 : {`${b.charge}%`}</h1>
 			</div>
 		{/each}
@@ -145,8 +186,43 @@
 			{/if}
 		</div>
 		{/each}
+
+<!-- ------------------------------------------------------------------이름 정하기------------------------------------------------------------------------------- -->
+
 	{:else if d.pos === 3}
-	<input bind:value={battery_count}/>
+	<button on:click={() => position = prev_position} style="margin-left: 0px;">
+		<Icon src={BiChevronLeft} size="30" color="#818181" className="title_back"/>
+		<h1 class="title_back_text">돌아가기</h1>
+	</button>
+	<h1 class="question">이름을 입력해 주세요</h1>
+	<input class="name_input"bind:value={battery_count}/>
+	{#if battery_count !== ""}
+	<Button on:click={() => {
+		adding_battery.name = battery_count;
+		position += 1;
+	}} color="blue" class="next_button" ><Icon src={CgArrowRight} size="40"/></Button>
+	{:else}
+	<Button color="blue" class="next_button" disabled><Icon src={CgArrowRight} size="40"/></Button>
+	{/if}
+
+<!-- ------------------------------------------------------------------충전량 정하기------------------------------------------------------------------------------- -->
+
+
+	{:else if d.pos === 4}
+	<button on:click={() => position -= 1} style="margin-left: 0px;">
+		<Icon src={BiChevronLeft} size="30" color="#818181" className="title_back"/>
+		<h1 class="title_back_text">돌아가기</h1>
+	</button>
+	<h1>임시로 정하는 거</h1>
+	<input type="range" bind:value={charge_count} min="0" max="100"/>
+	<p>{charge_count}</p>
+	<Button on:click={() => {
+		adding_battery.charge = charge_count;
+		battery_list.push(adding_battery);
+		reset_adding_battery();
+		alert('성?공적으로 추가되었습니다.');
+		position = prev_position;
+	}} class="complete_button" color="blue">완료<Icon src={BiCheck} size="25" className="icon"/></Button>
 	{/if}
 	</div>
 	{/each}
@@ -364,7 +440,7 @@
 		white-space: nowrap;
 	}
 	.cutton {
-		width: 500px;
+		width: 1000px;
 		height: 900px;
 		background: #FFF;
 		z-index: 10;
@@ -373,17 +449,18 @@
 	:global(.more) {
 		position: relative;
 		margin-left: 350px;
-		margin-top: -30px;
+		margin-top: -65px;
 	}
 	:global(.battery_more) {
 		position: relative;
 		margin-left: 190px;
-		top: -16px;
+		margin-top: -16px;
+		margin-bottom: 25px;
 	}
 	:global(.plus) {
 		position: relative;
 		margin-left: 310px;
-		margin-top: -40px;
+		margin-top: -60px;
 	}
 	:global(.icon) {
 		filter: invert(100%);
@@ -414,7 +491,7 @@
 		font-weight: 400;
 		white-space: nowrap;
 		margin-left: 20px;
-		margin-top: -8px;
+		margin-top: -20px;
 	}
 	:global(.plus_stick) {
 		margin-left: 14px;
@@ -472,7 +549,7 @@
 		text-align: left;
 		font-family: Noto Sans;
 		font-size: 15px;
-		font-weight: 500;
+		font-weight: 600;
 		margin-left: 30px;
 		margin-top: -29px;
 	}
@@ -522,5 +599,34 @@
 	:global(.battery_selector) {
 		margin-left: 130px;
 		margin-top: -46px;
+	}
+	.question {
+		font-family: Noto Sans;
+		font-weight: 500;
+		font-size: 120%;
+		margin-top: 240px;
+		text-align: center;
+	}
+	.name_input {
+		width: 300px;
+		height: 40px;
+		box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.30);
+		text-align: center;
+		margin-left: 45px;
+		margin-top: 30px;
+	}
+	:global(.next_button) {
+		height: 70px;
+		margin-left: 155.015px;
+		margin-top: 160px;
+	}
+	:global(.complete_button) {
+		margin-left: 148.525px;
+		margin-top: 440px;
+	}
+	:global(.del_button) {
+		background: #FFF;
+		margin-left: -212px;
+		margin-top: -35px;
 	}
 </style>
