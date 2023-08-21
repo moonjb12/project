@@ -13,8 +13,8 @@
 	import CgChevronDown from "svelte-icons-pack/cg/CgChevronDown";
 	import CgArrowRight from "svelte-icons-pack/cg/CgArrowRight";
 	import BiCheck from "svelte-icons-pack/bi/BiCheck";
-	import AiFillMinusCircle from "svelte-icons-pack/ai/AiFillMinusCircle";
 	import BiSolidMinusCircle from "svelte-icons-pack/bi/BiSolidMinusCircle";
+  import RiSystemErrorWarningLine from "svelte-icons-pack/ri/RiSystemErrorWarningLine";
 	import { Button, GradientButton, Dropdown, DropdownItem, Modal } from 'flowbite-svelte';
 	import { DarkMode } from 'flowbite-svelte';
 
@@ -46,11 +46,13 @@
 		charge_count = 0;
 	}
 
-	let dark = false;
+	let dark = false  ;
 
 	let editing = false;
 
 	let popupmodal = false;
+
+  let english = false;
 </script>
 
 <div class="cutton"style="left: 390px"/>
@@ -88,7 +90,11 @@
 		}} style="width: 96px; height: 96px;">
 			<div class="add"style="background: linear-gradient(120deg, hsl({selected_battery.charge + 60}, 100%, 50%) 0%, hsl({selected_battery.charge}, 100%, 50%) 100%);">
 				<Icon src={FiPlus} size="70" color=white className="plus_stick"/>
-				<h1 class="push_message">버튼을 눌러 기기 추가</h1>
+        {#if english}
+				<h1 class="push_message" style="left: -38px;">Push the button to add device</h1>
+        {:else}
+        <h1 class="push_message">버튼을 눌러 기기 추가</h1>
+        {/if}
 			</div>
 		</button>
 	{:else if d.pos === 1}
@@ -96,7 +102,8 @@
 		<div>
 			<Modal bind:open={popupmodal} size="xs" autoclose>
 				<div class="text-center">
-					<h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">이 배터리를 삭제하시겠습니까?</h3>
+          <Icon src={RiSystemErrorWarningLine} color="#9CA3AF" size="60" className="warn"/>
+					<h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">{english ? 'Are you sure you want to delete this battery?' : '이 배터리를 삭제하시겠습니까?'}</h3>
 					<Button on:click={() => battery_list.splice(0, 1)} color="blue" class="mr-2">확인</Button>
 					<Button on:click={() => console.log(popupmodal)} color="blue" outline>취소</Button>
 				</div>
@@ -183,6 +190,18 @@
 					</button>
 					<h1 class="setting_title_text">언어</h1>
 				</div>
+        <div>
+          <button on:click={() => english = false}>
+          <div class="setting_box" style="margin-top: 60px;">
+            <h1 class="setting_text" style="margin-left: 60px; text-align: left;">한국어</h1>
+          </div>
+          </button>
+          <button on:click={() => english = true}>
+          <div class="setting_box">
+            <h1 class="setting_text" style="margin-left: 60px; text-align: left;">English</h1>
+          </div>
+          </button>
+        </div>
 			{/if}
 		</div>
 		{/each}
@@ -555,7 +574,6 @@
 	.setting_title_text {
 		color: #000;
 		text-align: center;
-		font-family: Noto Sans;
 		font-size: 20px;
 		font-weight: 500;
 		margin-top: -10px;
@@ -582,7 +600,6 @@
 		margin-left: -110px;
 	}
 	.setting_text {
-		font-family: Noto Sans;
 		font-size: 15px;
 		font-weight: 500;
 		color: #818181;
@@ -600,7 +617,6 @@
 		margin-top: -46px;
 	}
 	.question {
-		font-family: Noto Sans;
 		font-weight: 500;
 		font-size: 120%;
 		margin-top: 240px;
@@ -628,4 +644,8 @@
 		margin-left: -212px;
 		margin-top: -35px;
 	}
+  :global(.warn) {
+    margin-left: 125px;
+    margin-bottom: 10px;
+  }
 </style>
