@@ -120,7 +120,7 @@
 				{#if !editing}
 				<Icon src={FiMoreVertical} size="20" className="battery_more menu"/>
 				<Dropdown>
-					<DropdownItem class="menuitem">이름바꾸기</DropdownItem>
+					<DropdownItem class="menuitem">이름 변경</DropdownItem>
 					<DropdownItem on:click={() => (popupmodal = true)} class="menuitem"style="color: red;">삭제</DropdownItem>
 				</Dropdown>
 				{:else}
@@ -291,6 +291,15 @@
 	:global(html.dark) .in-condition {
 		background: #1F2937;
 	}
+  :global(html.dark) .cutton {
+    background: #1F2937;
+  }
+  :global(html.dark .battery_more) {
+    color: #FFF;
+  }
+  :global(html.dark .del_button) {
+    background: #1F2937;
+  }
 	:global(html.dark) .selector {
 		background: #1F2937;
 		border: 1px solid #FFF;
@@ -341,7 +350,6 @@
 	}
 	.battery_name {
 		color: #000;
-		font-family: Noto Sans;
 		font-size: 20px;
 		font-weight: 500;
 		text-align: center;
@@ -366,7 +374,6 @@
 	.condition-number {
 		color: #000;
 		text-align: center;
-		font-family: Noto Sans;
 		font-size: 70px;
 		font-style: normal;
 		font-weight: 400;
@@ -388,7 +395,6 @@
 	.push_message {
 		color: #A1A1A1;
 		text-align: center;
-		font-family: Noto Sans;
 		font-size: 20px;
 		font-weight: 500;
 		white-space: nowrap;
@@ -408,7 +414,6 @@
 	.selected_text {
 		color: #FFF;
 		text-align: left;
-		font-family: Noto Sans;
 		font-size: 20px;
 		font-weight: 700;
 		white-space: nowrap;
@@ -425,7 +430,6 @@
 	.unselected_text {
 		color: #FFF;
 		text-align: center;
-		font-family: Noto Sans;
 		font-size: 20px;
 		font-weight: 400;
 		white-space: nowrap;
@@ -434,7 +438,6 @@
 	.title {
 		color: #000;
 		text-align: left;
-		font-family: Noto Sans;
 		font-size: 40px;
 		font-weight: 500;
 		white-space: nowrap;
@@ -486,7 +489,6 @@
 	.battery_text {
 		color: #5D5D5D;
 		text-align: left;
-		font-family: Noto Sans;
 		font-size: 15px;
 		font-weight: 400;
 		white-space: nowrap;
@@ -509,7 +511,6 @@
 		width: 100px;
 		height: 20px;
 		color: #818181;
-		font-family: Noto Sans;
 		font-size: 15px;
 		font-weight: 500;
 		margin-left: 20px;
@@ -521,7 +522,6 @@
 		height: 40px;
 		color: #818181;
 		text-align: right;
-		font-family: Noto Sans;
 		font-size: 15px;
 		font-weight: 500;
 		white-space: nowrap;
@@ -547,7 +547,6 @@
 	.title_back_text {
 		color: #A2A2A2;
 		text-align: left;
-		font-family: Noto Sans;
 		font-size: 15px;
 		font-weight: 600;
 		margin-left: 30px;
