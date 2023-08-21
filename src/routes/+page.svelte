@@ -104,11 +104,11 @@
 				<div class="text-center">
           <Icon src={RiSystemErrorWarningLine} color="#9CA3AF" size="60" className="warn"/>
 					<h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">{english ? 'Are you sure you want to delete this battery?' : '이 배터리를 삭제하시겠습니까?'}</h3>
-					<Button on:click={() => battery_list.splice(0, 1)} color="blue" class="mr-2">확인</Button>
-					<Button on:click={() => console.log(popupmodal)} color="blue" outline>취소</Button>
+					<Button on:click={() => battery_list.splice(0, 1)} color="blue" class="mr-2">{english ? "Yes, I'm sure" : '확인'}</Button>
+					<Button on:click={() => console.log(popupmodal)} color="blue" outline>{english ? 'No, cancel' : '취소'}</Button>
 				</div>
 			</Modal>
-			<h1 class="title"style="margin-left: 40px; margin-top: 50px;">디바이스</h1>
+			<h1 class="title"style="margin-left: 40px; margin-top: 50px;">{english ? 'Device' : '디바이스'}</h1>
 			<button on:click={() => {
 				prev_position = 1;
 				position = 3;
@@ -117,7 +117,7 @@
 			</button>
 			<Icon src={FiMoreVertical} size="30" className="icon2 more menu" />
 			<Dropdown>
-				<DropdownItem on:click={() => editing = !editing} class="menuitem">편집</DropdownItem>
+				<DropdownItem on:click={() => editing = !editing} class="menuitem">{english ? 'Edit' : '편집'}</DropdownItem>
 			</Dropdown>
 		</div>
 		<div class="scroll">
@@ -127,15 +127,15 @@
 				{#if !editing}
 				<Icon src={FiMoreVertical} size="20" className="battery_more menu"/>
 				<Dropdown>
-					<DropdownItem class="menuitem">이름 변경</DropdownItem>
-					<DropdownItem on:click={() => (popupmodal = true)} class="menuitem"style="color: red;">삭제</DropdownItem>
+					<DropdownItem class="menuitem">{english ? 'Rename' : '이름 변경'}</DropdownItem>
+					<DropdownItem on:click={() => (popupmodal = true)} class="menuitem"style="color: red;">{english ? 'Delete' : '삭제'}</DropdownItem>
 				</Dropdown>
 				{:else}
-				<button on:click={() => (popupmodal = true)} style="width: 20px; height: 22px;	left: 400px;">
+				<button on:click={() => (popupmodal = true)} style="width: 20px; height: 22px;	left: 200px;">
 					<Icon src={BiSolidMinusCircle} size="22" color="red" className="del_button"/>
 				</button>
 				{/if}
-				<h1 class="battery_text">충전 상태 : {`${b.charge}%`}</h1>
+				<h1 class="battery_text">{english ? `state : ${b.charge}%` : `충전 상태 : ${b.charge}%`}</h1>
 			</div>
 		{/each}
 		</div>
@@ -149,19 +149,19 @@
 			style="transition: transform {duration}ms; z-index: 2;"
 			>
 			{#if sd.pos === 0}
-				<h1 class="title"style="margin-left: 40px; margin-top: 50px;">설정</h1>
+				<h1 class="title"style="margin-left: 40px; margin-top: 50px;">{english ? 'Settings' : '설정'}</h1>
 				<div>
 					<button on:click={() => setting_position = 1}>
 						<div class="setting_box"style="margin-top: 60px;">
-							<h1 class="setting_title">테마</h1>
-							<h1 class="setting_sample"style="margin-top: -20px;">{dark ? '어두운 화면' : '밝은 화면'}</h1>
+							<h1 class="setting_title">{english ? 'Theme' : '테마'}</h1>
+							<h1 class="setting_sample"style="margin-top: -20px;">{english ? `${dark ? 'Dark mode' : 'Light mode'}` : `${dark ? '어두운 화면' : '밝은 화면'}`}</h1>
 							<Icon src={BiChevronRight} size="50" className="setting_next" color="#818181"/>
 						</div>
 					</button>
 					<button on:click={() => setting_position = 2}>
 						<div class="setting_box">
-							<h1 class="setting_title">언어</h1>
-							<h1 class="setting_sample"style="">한국어</h1>
+							<h1 class="setting_title">{english ? 'Language' : '언어'}</h1>
+							<h1 class="setting_sample"style="">{english ? 'English' : '한국어'}</h1>
 							<Icon src={BiChevronRight} size="50" className="setting_next" color="#818181"/>
 						</div>
 					</button>
@@ -170,13 +170,13 @@
 				<div class="setting_title_box">
 					<button on:click={() => setting_position = 0}>
 						<Icon src={BiChevronLeft} size="30" color="#818181" className="title_back"/>
-						<h1 class="title_back_text">뒤로</h1>
+						<h1 class="title_back_text">{english ? 'back' : '뒤로'}</h1>
 					</button>
-					<h1 class="setting_title_text">테마</h1>
+					<h1 class="setting_title_text">{english ? 'Theme' : '테마'}</h1>
 				</div>
 				<div>
 					<div class="setting_box" style="margin-top: 60px;">
-						<h1 class="setting_text">아이콘을 눌러 테마 변경</h1>
+						<h1 class="setting_text">{english ? 'Push the icon to change theme' : '아이콘을 눌러 테마 변경'}</h1>
 						<button class="darkmode_button"on:click={() => {dark = !dark}}>
 							<DarkMode class="darkmode"/>
 						</button>
@@ -186,9 +186,9 @@
 				<div class="setting_title_box">
 					<button on:click={() => setting_position = 0}>
 						<Icon src={BiChevronLeft} size="30" color="#818181" className="title_back"/>
-						<h1 class="title_back_text">뒤로</h1>
+						<h1 class="title_back_text">{english ? 'back' : '뒤로'}</h1>
 					</button>
-					<h1 class="setting_title_text">언어</h1>
+					<h1 class="setting_title_text">{english ? 'Language' : '언어'}</h1>
 				</div>
         <div>
           <button on:click={() => english = false}>
@@ -211,9 +211,9 @@
 	{:else if d.pos === 3}
 	<button on:click={() => position = prev_position} style="margin-left: 0px;">
 		<Icon src={BiChevronLeft} size="30" color="#818181" className="title_back"/>
-		<h1 class="title_back_text">돌아가기</h1>
+		<h1 class="title_back_text">{english ? 'back' : '돌아가기'}</h1>
 	</button>
-	<h1 class="question">이름을 입력해 주세요</h1>
+	<h1 class="question">{english ? 'Input battery name' : '이름을 입력해 주세요'}</h1>
 	<input class="name_input"bind:value={battery_count}/>
 	{#if battery_count !== ""}
 	<Button on:click={() => {
@@ -230,18 +230,28 @@
 	{:else if d.pos === 4}
 	<button on:click={() => position -= 1} style="margin-left: 0px;">
 		<Icon src={BiChevronLeft} size="30" color="#818181" className="title_back"/>
-		<h1 class="title_back_text">돌아가기</h1>
+		<h1 class="title_back_text">{english ? 'back' : '돌아가기'}</h1>
 	</button>
 	<h1>임시로 정하는 거</h1>
 	<input type="range" bind:value={charge_count} min="0" max="100"/>
 	<p>{charge_count}</p>
+  {#if english}
 	<Button on:click={() => {
 		adding_battery.charge = charge_count;
 		battery_list.push(adding_battery);
 		reset_adding_battery();
-		alert('성?공적으로 추가되었습니다.');
+		alert('Added successfully');
+		position = prev_position;
+	}} class="complete_button" color="blue" style="margin-left: 132px;">Complete<Icon src={BiCheck} size="25" className="icon"/></Button>
+  {:else}
+  <Button on:click={() => {
+		adding_battery.charge = charge_count;
+		battery_list.push(adding_battery);
+		reset_adding_battery();
+		alert('성공적으로 추가되었습니다.');
 		position = prev_position;
 	}} class="complete_button" color="blue">완료<Icon src={BiCheck} size="25" className="icon"/></Button>
+  {/if}
 	{/if}
 	</div>
 	{/each}
@@ -258,35 +268,71 @@
 	{#if selected_screen === 'home'}
 		{#if d.pos === 0}
 			<Icon src={AiFillHome} className="icon down" size="50"/>
-			<h1 class="selected_text"style="margin: 15px; top: -7px;">홈</h1>
+      {#if english}
+			<h1 class="selected_text"style="margin: 15px; top: -7px; left: -18px;">Home</h1>
+      {:else}
+      <h1 class="selected_text"style="margin: 15px; top: -7px;">홈</h1>
+      {/if}
 		{:else if d.pos === 1}
 			<Icon src={BsGrid} className="unicon up" size="50"/>
-			<h1 class="unselected_text"style="margin: 0px -14px; top: -6px;">디바이스</h1>
+      {#if english}
+			<h1 class="unselected_text"style="margin: 0px -14px; top: -6px; left: 3px;">Device</h1>
+      {:else}
+      <h1 class="unselected_text"style="margin: 0px -14px; top: -6px;">디바이스</h1>
+      {/if}
 		{:else if d.pos === 2}
 			<Icon src={AiOutlineSetting} className="icon up" size="50"/>
-			<h1 class="unselected_text"style="margin: 0px 4px; top: -6px;">설정</h1>
+      {#if english}
+			<h1 class="unselected_text"style="margin: 0px 4px; top: -6px; left: -14px;">Settings</h1>
+      {:else}
+      <h1 class="unselected_text"style="margin: 0px 4px; top: -6px;">설정</h1>
+      {/if}
 		{/if}
 	{:else if selected_screen === 'device'}
 		{#if d.pos === 0}
 			<Icon src={AiOutlineHome} className="icon down" size="50"/>
-			<h1 class="unselected_text"style="margin: 15px; top: -7px;">홈</h1>
+			{#if english}
+			<h1 class="unselected_text"style="margin: 15px; top: -7px; left: -18px;">Home</h1>
+      {:else}
+      <h1 class="unselected_text"style="margin: 15px; top: -7px;">홈</h1>
+      {/if}
 		{:else if d.pos === 1}
 			<Icon src={IoGrid} className="icon up" size="50"/>
-			<h1 class="selected_text"style="margin: 0px -14px; top: -6px;">디바이스</h1>
+			{#if english}
+			<h1 class="selected_text"style="margin: 0px -14px; top: -6px; left: 6px;">Device</h1>
+      {:else}
+      <h1 class="selected_text"style="margin: 0px -14px; top: -6px;">디바이스</h1>
+      {/if}
 		{:else if d.pos === 2}
 			<Icon src={AiOutlineSetting} className="icon up" size="50"/>
-			<h1 class="unselected_text"style="margin: 0px 4px; top: -6px;">설정</h1>
+			{#if english}
+			<h1 class="unselected_text"style="margin: 0px 4px; top: -6px; left: -14px;">Settings</h1>
+      {:else}
+      <h1 class="unselected_text"style="margin: 0px 4px; top: -6px;">설정</h1>
+      {/if}
 		{/if}
 	{:else if selected_screen === 'setting'}
 		{#if d.pos === 0}
 			<Icon src={AiOutlineHome} className="icon down" size="50"/>
-			<h1 class="unselected_text"style="margin: 15px; top: -7px;">홈</h1>
+			{#if english}
+			<h1 class="unselected_text"style="margin: 15px; top: -7px; left: -18px;">Home</h1>
+      {:else}
+      <h1 class="unselected_text"style="margin: 15px; top: -7px;">홈</h1>
+      {/if}
 		{:else if d.pos === 1}
 			<Icon src={BsGrid} className="unicon up" size="50"/>
-			<h1 class="unselected_text"style="margin: 0px -14px; top: -6px;">디바이스</h1>
+			{#if english}
+			<h1 class="unselected_text"style="margin: 0px -14px; top: -6px; left: 3px;">Device</h1>
+      {:else}
+      <h1 class="unselected_text"style="margin: 0px -14px; top: -6px;">디바이스</h1>
+      {/if}
 		{:else if d.pos === 2}
 			<Icon src={AiFillSetting} className="icon up" size="50"/>
-			<h1 class="selected_text"style="margin: 0px 4px; top: -6px;">설정</h1>
+			{#if english}
+			<h1 class="selected_text"style="margin: 0px 4px; top: -6px; left: -14px;">Settings</h1>
+      {:else}
+      <h1 class="selected_text"style="margin: 0px 4px; top: -6px;">설정</h1>
+      {/if}
 		{/if}
 	{/if}
 	</button>
@@ -641,7 +687,7 @@
 	}
 	:global(.del_button) {
 		background: #FFF;
-		margin-left: -212px;
+		margin-left: -12px;
 		margin-top: -35px;
 	}
   :global(.warn) {
