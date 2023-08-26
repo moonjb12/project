@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import Icon from 'svelte-icons-pack/Icon.svelte';
 	import FiMoreVertical from "svelte-icons-pack/fi/FiMoreVertical";
 	import FiPlus from "svelte-icons-pack/fi/FiPlus";
@@ -53,7 +53,90 @@
 	let popupmodal = false;
 
   let english = false;
+
+	// function isWebBLEAvailable() {
+	// 	if(!navigator.bluetooth) {
+	// 		console.log('Web Bluetooth is not available');
+	// 		return false;
+	// 	}
+
+	// 	return true;
+	// }
+
+	// function getDeviceInfo() {
+	// 	let options = {
+	// 		acceptAllDevices: true
+	// 	}
+
+	// 	console.log('Requesting BLE device info...');
+	// 	navigator.bluetooth.requestDevice(options).then(device => {
+	// 		console.log('Name: ' + device.name)
+	// 	}).catch(error => {
+	// 		console.log('Request device error: ' + error)
+	// 	})
+	// }
+
+	// document.querySelector('form')?.addEventListener('submit', function(event) {
+	// 	event.stopPropagation()
+	// 	event.preventDefault()
+
+	// 	if (isWebBLEAvailable()) {
+	// 		getDeviceInfo()
+	// 	}
+	// })
+
+	let device = null;
+  let server: BluetoothRemoteGATTServer | null = null;
+  let characteristics = new Map();
+
+  // Bluetooth Service and Characteristic UUIDs
+  const YOUR_SERVICE_UUID = 'd6fefafd-ac4a-4a52-91b5-e29b9b60dac7';
+  const YOUR_CHARACTERISTIC_UUID = 'ad7bf29a-5bcb-43b4-8133-096a72204b11';
+
+  async function connectToDevice() {
+    try {
+      device = await navigator.bluetooth.requestDevice({
+        acceptAllDevices: true,
+      });
+
+      if (device && device.gatt) {
+        server = await device.gatt.connect();
+        console.log('Connected to the device:', device.name);
+
+        // Cache the characteristics
+        await cacheCharacteristics();
+        // You can perform additional actions after connecting here
+      } else {
+        console.error('Device or gatt object is undefined.');
+      }
+    } catch (error) {
+      console.error('Error connecting to the device:', error);
+    }
+  }
+
+  async function cacheCharacteristics() {
+    if (server) {
+      const service = await server.getPrimaryService(YOUR_SERVICE_UUID);
+      const characteristic = await service.getCharacteristic(YOUR_CHARACTERISTIC_UUID);
+      characteristics.set(YOUR_CHARACTERISTIC_UUID, characteristic);
+    }
+  }
+
+  async function readCharacteristicValue() {
+    const characteristic = characteristics.get(YOUR_CHARACTERISTIC_UUID);
+    if (characteristic) {
+      const value = await characteristic.readValue();
+      console.log('Characteristic value:', value);
+    } else {
+      console.error('Characteristic is undefined.');
+    }
+  }
+
 </script>
+
+<h1>Bluetooth Control</h1>
+<button on:click={connectToDevice}>Connect to Device</button>
+<button on:click={readCharacteristicValue}>Read Characteristic Value</button>
 
 <div class="cutton"style="left: 390px"/>
 
