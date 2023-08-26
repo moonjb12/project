@@ -15,6 +15,7 @@
 	import BiCheck from "svelte-icons-pack/bi/BiCheck";
 	import BiSolidMinusCircle from "svelte-icons-pack/bi/BiSolidMinusCircle";
   import RiSystemErrorWarningLine from "svelte-icons-pack/ri/RiSystemErrorWarningLine";
+	import FiBluetooth from "svelte-icons-pack/fi/FiBluetooth";
 	import { Button, GradientButton, Dropdown, DropdownItem, Modal } from 'flowbite-svelte';
 	import { DarkMode } from 'flowbite-svelte';
 
@@ -47,12 +48,11 @@
 	}
 
 	let dark = false  ;
-
 	let editing = false;
-
 	let popupmodal = false;
-
   let english = false;
+
+	let connected = false;
 
 	let device = null;
   let server: BluetoothRemoteGATTServer | null = null;
@@ -60,15 +60,17 @@
 
   // Bluetooth Service and Characteristic UUIDs
   const YOUR_SERVICE_UUID = 'd6fefafd-ac4a-4a52-91b5-e29b9b60dac7';
-  const YOUR_CHARACTERISTIC_UUID = 'ad7bf29a-5bcb-43b4-8133-096a72204b11';
+  const YOUR_CHARACTERISTIC_UUID = 'af294c50-a8dd-81f1-dac1-f0f240b37428';
 
   async function connectToDevice() {
     try {
       device = await navigator.bluetooth.requestDevice({
-        acceptAllDevices: true,
+				filters: [{"name" : "ESP32_BLE_Server"}],
+        // acceptAllDevices: true,
       });
 
       if (device && device.gatt) {
+				connected = true;
         server = await device.gatt.connect();
         console.log('Connected to the device:', device.name);
 
@@ -92,7 +94,8 @@
   }
 
   async function readCharacteristicValue() {
-    const characteristic = characteristics.get(YOUR_CHARACTERISTIC_UUID);
+    const characteristic = characteristics.get(YOUR_SERVICE_UUID);
+		console.log(characteristic);
     if (characteristic) {
       const value = await characteristic.readValue();
       console.log('Characteristic value:', value);
@@ -287,7 +290,11 @@
 	<h1>임시로 정하는 거</h1>
 	<input type="range" bind:value={charge_count} min="0" max="100"/>
 	<p>{charge_count}</p>
+	<div>
+		<GradientButton on:click={connectToDevice} color="cyanToBlue" style="margin-top: 250px; margin-left: 163px; height: 64px;"><Icon src={FiBluetooth} size="24"/></GradientButton>
+	</div>
   {#if english}
+	{#if connected}
 	<Button on:click={() => {
 		adding_battery.charge = charge_count;
 		battery_list.push(adding_battery);
@@ -295,7 +302,11 @@
 		alert('Added successfully');
 		position = prev_position;
 	}} class="complete_button" color="blue" style="margin-left: 132px;">Complete<Icon src={BiCheck} size="25" className="icon"/></Button>
+	{:else}
+	<Button class="complete_button" color="blue" style="margin-left: 132px;" disabled>Complete<Icon src={BiCheck} size="25" className="icon"/></Button>
+	{/if}
   {:else}
+	{#if connected}
   <Button on:click={() => {
 		adding_battery.charge = charge_count;
 		battery_list.push(adding_battery);
@@ -303,6 +314,9 @@
 		alert('성공적으로 추가되었습니다.');
 		position = prev_position;
 	}} class="complete_button" color="blue">완료<Icon src={BiCheck} size="25" className="icon"/></Button>
+	{:else}
+	<Button class="complete_button" color="blue" disabled>완료<Icon src={BiCheck} size="25" className="icon"/></Button>
+	{/if}
   {/if}
 	{/if}
 	</div>
@@ -735,7 +749,7 @@
 	}
 	:global(.complete_button) {
 		margin-left: 148.525px;
-		margin-top: 440px;
+		margin-top: 190px;
 	}
 	:global(.del_button) {
 		background: #FFF;
