@@ -30,7 +30,7 @@
 	let setting_position = 0;
 	let setting_slideWidth;
 
-	let battery_list = [{name: '배터리 1', charge: 100}, {name : '배터리 2', charge: 75}, {name: '배터리ㅣ3', charge: 50}, {name: '4 배터리', charge: 25}, {name: '555 배', charge: 0}, {name: '배6터 리', charge: 63}];
+	let battery_list: any[] = [];
 
 	let battery_count = `배터리 ${battery_list.length + 1}`;
 	let charge_count = 0;
@@ -133,23 +133,40 @@
 			<h1 class="battery_name"style="margin-top: 10px;">{selected_battery.name}<button class="battery_selector_button">
 				<Icon src={CgChevronDown} className="icon2 battery_selector menu" size="20"/>
 				<Dropdown>
-				<!-- <DropdownItem class="menuitem">하하</DropdownItem> -->
 			{#each battery_list as b}
 				<DropdownItem class="menuitem"on:click={() => selected_battery = b}>{b.name}</DropdownItem>
 			{/each}
 			</Dropdown>
 			</button></h1>
 		</div>
+		{#if battery_list.length === 0}
+		<div class="condition"style="background: #FFF">
+			<div class="in-condition">
+				<h1 class="condition-number">- %</h1>
+			</div>
+		</div>
+		{:else}
 		<div class="condition"style="background: linear-gradient(120deg, hsl({selected_battery.charge}, 100%, 50%) 0%, hsl({selected_battery.charge + 60}, 100%, 50%) 100%);">
 			<div class="in-condition">
 				<h1 class="condition-number">{`${selected_battery.charge}%`}</h1>
 			</div>
 		</div>
+		{/if}
 		<button on:click={() => {
 			prev_position = 0;
 			position = 3;
 			reset_adding_battery();
 		}} style="width: 96px; height: 96px;">
+		{#if battery_list.length === 0}
+		<div class="add"style="background: #FFF">
+			<Icon src={FiPlus} size="70" color="#EBEBEB" className="plus_stick"/>
+			{#if english}
+			<h1 class="push_message" style="left: -38px;">Push the button to add device</h1>
+			{:else}
+			<h1 class="push_message">버튼을 눌러 기기 추가</h1>
+			{/if}
+		</div>
+			{:else}
 			<div class="add"style="background: linear-gradient(120deg, hsl({selected_battery.charge + 60}, 100%, 50%) 0%, hsl({selected_battery.charge}, 100%, 50%) 100%);">
 				<Icon src={FiPlus} size="70" color=white className="plus_stick"/>
         {#if english}
@@ -158,6 +175,7 @@
         <h1 class="push_message">버튼을 눌러 기기 추가</h1>
         {/if}
 			</div>
+			{/if}
 		</button>
 	{:else if d.pos === 1}
 	<!-- ----------------------------------------------------------------------디바이스------------------------------------------------------------------------------------ -->
@@ -295,7 +313,11 @@
 		<h1 class="title_back_text">{english ? 'back' : '돌아가기'}</h1>
 	</button>
 	<div>
-		<GradientButton on:click={connectToDevice} color="cyanToBlue" style="margin-top: 250px; margin-left: 118.575px;"><Icon src={FiBluetooth} size="24"/>{english ? 'Connect bluetooth' : '블루투스 연결'}</GradientButton>
+		{#if !english}
+		<GradientButton on:click={connectToDevice} color="cyanToBlue" style="margin-top: 250px; margin-left: 118.575px;"><Icon src={FiBluetooth} size="24"/>블루투스 연결</GradientButton>
+		{:else}
+		<GradientButton on:click={connectToDevice} color="cyanToBlue" style="margin-top: 250px; margin-left: 103.46px;"><Icon src={FiBluetooth} size="24"/>Connect Bluetooth</GradientButton>
+		{/if}
 	</div>
 	<div>
 		{#if connected}
