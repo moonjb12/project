@@ -16,6 +16,7 @@
 	import BiSolidMinusCircle from "svelte-icons-pack/bi/BiSolidMinusCircle";
   import RiSystemErrorWarningLine from "svelte-icons-pack/ri/RiSystemErrorWarningLine";
 	import FiBluetooth from "svelte-icons-pack/fi/FiBluetooth";
+	import CgBattery from "svelte-icons-pack/cg/CgBattery";
 	import { Button, GradientButton, Dropdown, DropdownItem, Modal } from 'flowbite-svelte';
 	import { DarkMode } from 'flowbite-svelte';
 
@@ -45,6 +46,9 @@
 		adding_battery = {name: '', charge: 0};
 		battery_count = `배터리 ${battery_list.length + 1}`;
 		charge_count = 0;
+		connected = false;
+		complete = false;
+		final_value = '';
 	}
 
 	let dark = false  ;
@@ -53,19 +57,21 @@
   let english = false;
 
 	let connected = false;
+	let complete = false;
+	let final_value = '';
 
 	let device = null;
   let server: BluetoothRemoteGATTServer | null = null;
   let characteristics = new Map();
 
   // Bluetooth Service and Characteristic UUIDs
-  const YOUR_SERVICE_UUID = 'd6fefafd-ac4a-4a52-91b5-e29b9b60dac7';
+  const YOUR_SERVICE_UUID = 'af294c50-a8dd-81f1-dac1-f0f240b37428';
   const YOUR_CHARACTERISTIC_UUID = 'af294c50-a8dd-81f1-dac1-f0f240b37428';
 
   async function connectToDevice() {
     try {
       device = await navigator.bluetooth.requestDevice({
-				filters: [{"name" : "ESP32_BLE_Server"}],
+				filters: [{ services : [YOUR_SERVICE_UUID]}],
         // acceptAllDevices: true,
       });
 
@@ -95,20 +101,21 @@
 
   async function readCharacteristicValue() {
     const characteristic = characteristics.get(YOUR_SERVICE_UUID);
-		console.log(characteristic);
     if (characteristic) {
       const value = await characteristic.readValue();
-      console.log('Characteristic value:', value);
+			const typedArray = new Int8Array(value.buffer);
+			let array = [...typedArray];
+			array.splice(array.indexOf(46));
+			for (let i = 0; i < array.length; i++) {
+				final_value += String.fromCharCode(array[i]);
+			}
+			complete = true;
     } else {
       console.error('Characteristic is undefined.');
     }
   }
 
 </script>
-
-<h1>Bluetooth Control</h1>
-<button on:click={connectToDevice}>Connect to Device</button>
-<button on:click={readCharacteristicValue}>Read Characteristic Value</button>
 
 <div class="cutton"style="left: 390px"/>
 
@@ -287,16 +294,20 @@
 		<Icon src={BiChevronLeft} size="30" color="#818181" className="title_back"/>
 		<h1 class="title_back_text">{english ? 'back' : '돌아가기'}</h1>
 	</button>
-	<h1>임시로 정하는 거</h1>
-	<input type="range" bind:value={charge_count} min="0" max="100"/>
-	<p>{charge_count}</p>
 	<div>
-		<GradientButton on:click={connectToDevice} color="cyanToBlue" style="margin-top: 250px; margin-left: 163px; height: 64px;"><Icon src={FiBluetooth} size="24"/></GradientButton>
+		<GradientButton on:click={connectToDevice} color="cyanToBlue" style="margin-top: 250px; margin-left: 118.575px;"><Icon src={FiBluetooth} size="24"/>{english ? 'Connect bluetooth' : '블루투스 연결'}</GradientButton>
+	</div>
+	<div>
+		{#if connected}
+		<GradientButton on:click={readCharacteristicValue} color="cyanToBlue" style="margin-top: 50px; margin-left: 118.575px;"><Icon src={CgBattery} color="#FFF" size="24"/>{english ? 'Get state' : '충전량 구하기'}</GradientButton>
+		{:else}
+		<GradientButton color="cyanToBlue" style="margin-top: 50px; margin-left: 118.575px;" disabled><Icon src={CgBattery} color="#FFF" size="24"/>{english ? 'Get state' : '충전량 구하기'}</GradientButton>
+		{/if}
 	</div>
   {#if english}
-	{#if connected}
+	{#if complete}
 	<Button on:click={() => {
-		adding_battery.charge = charge_count;
+		adding_battery.charge = Number(final_value);
 		battery_list.push(adding_battery);
 		reset_adding_battery();
 		alert('Added successfully');
@@ -306,9 +317,9 @@
 	<Button class="complete_button" color="blue" style="margin-left: 132px;" disabled>Complete<Icon src={BiCheck} size="25" className="icon"/></Button>
 	{/if}
   {:else}
-	{#if connected}
+	{#if complete}
   <Button on:click={() => {
-		adding_battery.charge = charge_count;
+		adding_battery.charge = Number(final_value);
 		battery_list.push(adding_battery);
 		reset_adding_battery();
 		alert('성공적으로 추가되었습니다.');
@@ -749,7 +760,7 @@
 	}
 	:global(.complete_button) {
 		margin-left: 148.525px;
-		margin-top: 190px;
+		margin-top: 140px;
 	}
 	:global(.del_button) {
 		background: #FFF;
