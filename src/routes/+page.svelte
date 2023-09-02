@@ -30,7 +30,24 @@
 	let setting_position = 0;
 	let setting_slideWidth;
 
-	let battery_list: any[] = [];
+	let battery_list = [{name: '배터리 1', charge: 100}, {name : '배터리 2', charge: 75}, {name: '배터리ㅣ3', charge: 50}, {name: '4 배터리', charge: 25}, {name: '555 배', charge: 0}, {name: '배6터 리', charge: 63}];
+
+	function resetLocalStorage() {
+		battery_list.forEach((e) => {
+			let JSONBatteryList = JSON.stringify(battery_list[battery_list.indexOf(e)]);
+			window.localStorage.setItem(String(battery_list.indexOf(e)), JSONBatteryList);
+		})
+	}
+
+	function resetBatteryList() {
+		for (let i = 0; i < window.localStorage.length - 4; i++) {
+			console.log(typeof(String(i)));
+			console.log(String(i));
+			// battery_list[i] = JSON.parse(window.localStorage.getItem(String(i)));
+		}
+	}
+
+	resetBatteryList();
 
 	let battery_count = `배터리 ${battery_list.length + 1}`;
 	let charge_count = 0;
@@ -54,7 +71,7 @@
 	let dark = false  ;
 	let editing = false;
 	let popupmodal = false;
-  let english = false;
+	let english = false;
 
 	let connected = false;
 	let complete = false;
@@ -140,9 +157,9 @@
 			</button></h1>
 		</div>
 		{#if battery_list.length === 0}
-		<div class="condition"style="background: #FFF">
+		<div class="condition"style="background: #FFF;">
 			<div class="in-condition">
-				<h1 class="condition-number">- %</h1>
+				<h1 class="condition-number">{`${selected_battery.charge}%`}</h1>
 			</div>
 		</div>
 		{:else}
@@ -158,14 +175,14 @@
 			reset_adding_battery();
 		}} style="width: 96px; height: 96px;">
 		{#if battery_list.length === 0}
-		<div class="add"style="background: #FFF">
-			<Icon src={FiPlus} size="70" color="#EBEBEB" className="plus_stick"/>
-			{#if english}
-			<h1 class="push_message" style="left: -38px;">Push the button to add device</h1>
-			{:else}
-			<h1 class="push_message">버튼을 눌러 기기 추가</h1>
-			{/if}
-		</div>
+			<div class="add"style="background: #FFF">
+				<Icon src={FiPlus} size="70" color="#D1D1D1" className="plus_stick"/>
+        {#if english}
+				<h1 class="push_message" style="left: -38px;">Push the button to add device</h1>
+        {:else}
+        <h1 class="push_message">버튼을 눌러 기기 추가</h1>
+        {/if}
+			</div>
 			{:else}
 			<div class="add"style="background: linear-gradient(120deg, hsl({selected_battery.charge + 60}, 100%, 50%) 0%, hsl({selected_battery.charge}, 100%, 50%) 100%);">
 				<Icon src={FiPlus} size="70" color=white className="plus_stick"/>
@@ -184,7 +201,10 @@
 				<div class="text-center">
           <Icon src={RiSystemErrorWarningLine} color="#9CA3AF" size="60" className="warn"/>
 					<h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">{english ? 'Are you sure you want to delete this battery?' : '이 배터리를 삭제하시겠습니까?'}</h3>
-					<Button on:click={() => battery_list.splice(0, 1)} color="blue" class="mr-2">{english ? "Yes, I'm sure" : '확인'}</Button>
+					<Button on:click={() => {
+						battery_list.splice(battery_list.indexOf(selected_battery), 1);
+						resetLocalStorage();
+					}} color="blue" class="mr-2">{english ? "Yes, I'm sure" : '확인'}</Button>
 					<Button on:click={() => console.log(popupmodal)} color="blue" outline>{english ? 'No, cancel' : '취소'}</Button>
 				</div>
 			</Modal>
@@ -208,14 +228,17 @@
 				<Icon src={FiMoreVertical} size="20" className="battery_more menu"/>
 				<Dropdown>
 					<DropdownItem class="menuitem">{english ? 'Rename' : '이름 변경'}</DropdownItem>
-					<DropdownItem on:click={() => (popupmodal = true)} class="menuitem"style="color: red;">{english ? 'Delete' : '삭제'}</DropdownItem>
+					<DropdownItem on:click={() => {
+						(popupmodal = true);
+						selected_battery = b;
+						}} class="menuitem"style="color: red;">{english ? 'Delete' : '삭제'}</DropdownItem>
 				</Dropdown>
 				{:else}
 				<button on:click={() => (popupmodal = true)} style="width: 20px; height: 22px;	left: 200px;">
 					<Icon src={BiSolidMinusCircle} size="22" color="red" className="del_button"/>
 				</button>
 				{/if}
-				<h1 class="battery_text">{english ? `state : ${b.charge}%` : `충전 상태 : ${b.charge}%`}</h1>
+				<h1 class="battery_text">{english ? `level : ${b.charge}%` : `충전 상태 : ${b.charge}%`}</h1>
 			</div>
 		{/each}
 		</div>
@@ -313,17 +336,13 @@
 		<h1 class="title_back_text">{english ? 'back' : '돌아가기'}</h1>
 	</button>
 	<div>
-		{#if !english}
-		<GradientButton on:click={connectToDevice} color="cyanToBlue" style="margin-top: 250px; margin-left: 118.575px;"><Icon src={FiBluetooth} size="24"/>블루투스 연결</GradientButton>
-		{:else}
-		<GradientButton on:click={connectToDevice} color="cyanToBlue" style="margin-top: 250px; margin-left: 103.46px;"><Icon src={FiBluetooth} size="24"/>Connect Bluetooth</GradientButton>
-		{/if}
+		<GradientButton on:click={connectToDevice} color="cyanToBlue" style="margin-top: 250px; margin-left: 118.575px;"><Icon src={FiBluetooth} size="24"/>{english ? 'Connect bluetooth' : '블루투스 연결'}</GradientButton>
 	</div>
 	<div>
 		{#if connected}
-		<GradientButton on:click={readCharacteristicValue} color="cyanToBlue" style="margin-top: 50px; margin-left: 118.575px;"><Icon src={CgBattery} color="#FFF" size="24"/>{english ? 'Get state' : '충전량 구하기'}</GradientButton>
+		<GradientButton on:click={readCharacteristicValue} color="cyanToBlue" style="margin-top: 50px; margin-left: 118.575px;"><Icon src={CgBattery} color="#FFF" size="24"/>{english ? 'Get battery level' : '충전량 구하기'}</GradientButton>
 		{:else}
-		<GradientButton color="cyanToBlue" style="margin-top: 50px; margin-left: 118.575px;" disabled><Icon src={CgBattery} color="#FFF" size="24"/>{english ? 'Get state' : '충전량 구하기'}</GradientButton>
+		<GradientButton color="cyanToBlue" style="margin-top: 50px; margin-left: 118.575px;" disabled><Icon src={CgBattery} color="#FFF" size="24"/>{english ? 'Get battery level' : '충전량 구하기'}</GradientButton>
 		{/if}
 	</div>
   {#if english}
@@ -332,6 +351,7 @@
 		adding_battery.charge = Number(final_value);
 		battery_list.push(adding_battery);
 		reset_adding_battery();
+		resetLocalStorage();
 		alert('Added successfully');
 		position = prev_position;
 	}} class="complete_button" color="blue" style="margin-left: 132px;">Complete<Icon src={BiCheck} size="25" className="icon"/></Button>
@@ -344,6 +364,7 @@
 		adding_battery.charge = Number(final_value);
 		battery_list.push(adding_battery);
 		reset_adding_battery();
+		resetLocalStorage();
 		alert('성공적으로 추가되었습니다.');
 		position = prev_position;
 	}} class="complete_button" color="blue">완료<Icon src={BiCheck} size="25" className="icon"/></Button>
