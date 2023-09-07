@@ -21,7 +21,7 @@
 	import { DarkMode } from 'flowbite-svelte';
 
 
-	let main_data = [{pos: 0, screen: 'home'}, {pos: 1, screen: 'device'}, {pos: 2, screen: 'setting'}, {pos: 3, screen: 'name'}, {pos: 4, screen: 'add'}];
+	let main_data = [{pos: 0, screen: 'home'}, {pos: 1, screen: 'device'}, {pos: 2, screen: 'setting'}, {pos: 3, screen: 'name'}, {pos: 4, screen: 'add'}, {pos: 5, screen: 'reconnect'}, {pos: 6, screen: 'rename'}];
 	let position = 0;
 	let duration = 400;
 	let slideWidth;
@@ -32,25 +32,26 @@
 
 	let battery_list = [{name: '배터리 1', charge: 100}, {name : '배터리 2', charge: 75}, {name: '배터리ㅣ3', charge: 50}, {name: '4 배터리', charge: 25}, {name: '555 배', charge: 0}, {name: '배6터 리', charge: 63}];
 
-	function resetLocalStorage() {
-		battery_list.forEach((e) => {
-			let JSONBatteryList = JSON.stringify(battery_list[battery_list.indexOf(e)]);
-			window.localStorage.setItem(String(battery_list.indexOf(e)), JSONBatteryList);
-		})
-	}
+	// function resetLocalStorage() {
+	// 	battery_list.forEach((e) => {
+	// 		let JSONBatteryList = JSON.stringify(battery_list[battery_list.indexOf(e)]);
+	// 		localStorage.setItem(String(battery_list.indexOf(e)), JSONBatteryList);
+	// 	})
+	// }
 
-	function resetBatteryList() {
-		for (let i = 0; i < window.localStorage.length - 4; i++) {
-			console.log(typeof(String(i)));
-			console.log(String(i));
-			// battery_list[i] = JSON.parse(window.localStorage.getItem(String(i)));
-		}
-	}
+	// function resetBatteryList() {
+	// 	let localBatteryList = [];
+	// 	let localStorageLength = localStorage.length - 4;
+	// 	for (let i = 0; i < localStorageLength; i++) {
+	// 		localBatteryList.push(localStorage.getItem(String(i)))
+	// 	}
+	// 	console.log(localBatteryList);
+	// }
 
-	resetBatteryList();
+	// resetBatteryList()
 
 	let battery_count = `배터리 ${battery_list.length + 1}`;
-	let charge_count = 0;
+	let editingPos = 0;
 
 	let adding_battery = {name: '', charge: 0};
 
@@ -62,7 +63,6 @@
 	let reset_adding_battery = () => {
 		adding_battery = {name: '', charge: 0};
 		battery_count = `배터리 ${battery_list.length + 1}`;
-		charge_count = 0;
 		connected = false;
 		complete = false;
 		final_value = '';
@@ -203,7 +203,7 @@
 					<h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">{english ? 'Are you sure you want to delete this battery?' : '이 배터리를 삭제하시겠습니까?'}</h3>
 					<Button on:click={() => {
 						battery_list.splice(battery_list.indexOf(selected_battery), 1);
-						resetLocalStorage();
+						// resetLocalStorage();
 					}} color="blue" class="mr-2">{english ? "Yes, I'm sure" : '확인'}</Button>
 					<Button on:click={() => console.log(popupmodal)} color="blue" outline>{english ? 'No, cancel' : '취소'}</Button>
 				</div>
@@ -227,7 +227,16 @@
 				{#if !editing}
 				<Icon src={FiMoreVertical} size="20" className="battery_more menu"/>
 				<Dropdown>
-					<DropdownItem class="menuitem">{english ? 'Rename' : '이름 변경'}</DropdownItem>
+					<DropdownItem on:click={() => {
+						editingPos = battery_list.indexOf(b);
+						prev_position = 1;
+						position = 6;
+					}} class="menuitem">{english ? 'Rename' : '이름 변경'}</DropdownItem>
+					<DropdownItem on:click={() => {
+						editingPos = battery_list.indexOf(b);
+						prev_position = 1;
+						position = 5;
+					}} class="menuitem">{english ? 'Reconnect' : '재연결'}</DropdownItem>
 					<DropdownItem on:click={() => {
 						(popupmodal = true);
 						selected_battery = b;
@@ -242,7 +251,7 @@
 			</div>
 		{/each}
 		</div>
-<!-- ----------------------------------------------------------------------설정------------------------------------------------------------------------------------ -->
+	<!-- ----------------------------------------------------------------------설정------------------------------------------------------------------------------------ -->
 	{:else if d.pos === 2}
 		{#each setting_data as sd}
 		{@const modifier = setting_position < sd.pos ? 1 : -1}
@@ -309,7 +318,7 @@
 		</div>
 		{/each}
 
-<!-- ------------------------------------------------------------------이름 정하기------------------------------------------------------------------------------- -->
+	<!-- ------------------------------------------------------------------이름 정하기------------------------------------------------------------------------------- -->
 
 	{:else if d.pos === 3}
 	<button on:click={() => position = prev_position} style="margin-left: 0px;">
@@ -327,7 +336,7 @@
 	<Button color="blue" class="next_button" disabled><Icon src={CgArrowRight} size="40"/></Button>
 	{/if}
 
-<!-- ------------------------------------------------------------------충전량 정하기------------------------------------------------------------------------------- -->
+	<!-- ------------------------------------------------------------------충전량 정하기------------------------------------------------------------------------------- -->
 
 
 	{:else if d.pos === 4}
@@ -351,7 +360,7 @@
 		adding_battery.charge = Number(final_value);
 		battery_list.push(adding_battery);
 		reset_adding_battery();
-		resetLocalStorage();
+		// resetLocalStorage();
 		alert('Added successfully');
 		position = prev_position;
 	}} class="complete_button" color="blue" style="margin-left: 132px;">Complete<Icon src={BiCheck} size="25" className="icon"/></Button>
@@ -364,7 +373,7 @@
 		adding_battery.charge = Number(final_value);
 		battery_list.push(adding_battery);
 		reset_adding_battery();
-		resetLocalStorage();
+		// resetLocalStorage();
 		alert('성공적으로 추가되었습니다.');
 		position = prev_position;
 	}} class="complete_button" color="blue">완료<Icon src={BiCheck} size="25" className="icon"/></Button>
@@ -372,6 +381,60 @@
 	<Button class="complete_button" color="blue" disabled>완료<Icon src={BiCheck} size="25" className="icon"/></Button>
 	{/if}
   {/if}
+	<!-- ------------------------------------------------------------------재연결------------------------------------------------------------------------------- -->
+	{:else if d.pos === 5}
+	<button on:click={() => position = prev_position} style="margin-left: 0px;">
+		<Icon src={BiChevronLeft} size="30" color="#818181" className="title_back"/>
+		<h1 class="title_back_text">{english ? 'back' : '돌아가기'}</h1>
+	</button>
+	<div>
+		<GradientButton on:click={connectToDevice} color="cyanToBlue" style="margin-top: 250px; margin-left: 118.575px;"><Icon src={FiBluetooth} size="24"/>{english ? 'Connect bluetooth' : '블루투스 연결'}</GradientButton>
+	</div>
+	<div>
+		{#if connected}
+		<GradientButton on:click={readCharacteristicValue} color="cyanToBlue" style="margin-top: 50px; margin-left: 118.575px;"><Icon src={CgBattery} color="#FFF" size="24"/>{english ? 'Get battery level' : '충전량 구하기'}</GradientButton>
+		{:else}
+		<GradientButton color="cyanToBlue" style="margin-top: 50px; margin-left: 118.575px;" disabled><Icon src={CgBattery} color="#FFF" size="24"/>{english ? 'Get battery level' : '충전량 구하기'}</GradientButton>
+		{/if}
+	</div>
+  {#if english}
+	{#if complete}
+	<Button on:click={() => {
+		battery_list[editingPos].charge = Number(final_value);
+		// resetLocalStorage();
+		alert('Added successfully');
+		position = prev_position;
+	}} class="complete_button" color="blue" style="margin-left: 132px;">Complete<Icon src={BiCheck} size="25" className="icon"/></Button>
+	{:else}
+	<Button class="complete_button" color="blue" style="margin-left: 132px;" disabled>Complete<Icon src={BiCheck} size="25" className="icon"/></Button>
+	{/if}
+  {:else}
+	{#if complete}
+  <Button on:click={() => {
+		battery_list[editingPos].charge = Number(final_value);
+		// resetLocalStorage();
+		alert('성공적으로 추가되었습니다.');
+		position = prev_position;
+	}} class="complete_button" color="blue">완료<Icon src={BiCheck} size="25" className="icon"/></Button>
+	{:else}
+	<Button class="complete_button" color="blue" disabled>완료<Icon src={BiCheck} size="25" className="icon"/></Button>
+	{/if}
+  {/if}
+	<!-- ------------------------------------------------------------------이름 변경------------------------------------------------------------------------------- -->
+	{:else if d.pos === 6}
+	<button on:click={() => position = prev_position} style="margin-left: 0px;">
+		<Icon src={BiChevronLeft} size="30" color="#818181" className="title_back"/>
+		<h1 class="title_back_text">{english ? 'back' : '돌아가기'}</h1>
+	</button>
+	<h1 class="question">{english ? 'Input battery name' : '이름을 입력해 주세요'}</h1>
+	<input class="name_input"bind:value={battery_list[editingPos].name}/>
+	{#if battery_list[editingPos].name !== ""}
+	<Button on:click={() => {
+		position = prev_position;
+	}} color="blue" class="next_button" ><Icon src={CgArrowRight} size="40"/></Button>
+	{:else}
+	<Button color="blue" class="next_button" disabled><Icon src={CgArrowRight} size="40"/></Button>
+	{/if}
 	{/if}
 	</div>
 	{/each}
