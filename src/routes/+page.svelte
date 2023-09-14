@@ -19,6 +19,7 @@
 	import CgBattery from "svelte-icons-pack/cg/CgBattery";
 	import { Button, GradientButton, Dropdown, DropdownItem, Modal } from 'flowbite-svelte';
 	import { DarkMode } from 'flowbite-svelte';
+  import { stringify } from 'postcss';
 
 
 	let main_data = [{pos: 0, screen: 'home'}, {pos: 1, screen: 'device'}, {pos: 2, screen: 'setting'}, {pos: 3, screen: 'name'}, {pos: 4, screen: 'add'}, {pos: 5, screen: 'reconnect'}, {pos: 6, screen: 'rename'}];
@@ -39,16 +40,18 @@
 	// 	})
 	// }
 
-	// function resetBatteryList() {
-	// 	let localBatteryList = [];
-	// 	let localStorageLength = localStorage.length - 4;
-	// 	for (let i = 0; i < localStorageLength; i++) {
-	// 		localBatteryList.push(localStorage.getItem(String(i)))
-	// 	}
-	// 	console.log(localBatteryList);
-	// }
+	function resetLocalStorage() {
+		battery_list.forEach((e) => {
+			localStorage.setItem(String(battery_list.indexOf(e)), JSON.stringify(battery_list[battery_list.indexOf(e)]));
+		})
+	}
 
-	// resetBatteryList()
+	function resetBatteryList() {
+		battery_list = [];
+		for (let i = 0; i < localStorage.length - 4; i++) {
+			battery_list.push(JSON.parse(localStorage.getItem(String(i)) || '{}'))
+		}
+	}
 
 	let battery_count = `배터리 ${battery_list.length + 1}`;
 	let editingPos = 0;
@@ -81,7 +84,6 @@
   let server: BluetoothRemoteGATTServer | null = null;
   let characteristics = new Map();
 
-  // Bluetooth Service and Characteristic UUIDs
   const YOUR_SERVICE_UUID = 'af294c50-a8dd-81f1-dac1-f0f240b37428';
   const YOUR_CHARACTERISTIC_UUID = 'af294c50-a8dd-81f1-dac1-f0f240b37428';
 
@@ -97,9 +99,7 @@
         server = await device.gatt.connect();
         console.log('Connected to the device:', device.name);
 
-        // Cache the characteristics
         await cacheCharacteristics();
-        // You can perform additional actions after connecting here
       } else {
         console.error('Device or gatt object is undefined.');
       }
@@ -117,7 +117,7 @@
   }
 
   async function readCharacteristicValue() {
-    const characteristic = characteristics.get(YOUR_SERVICE_UUID);
+    const characteristic = characteristics.get(YOUR_CHARACTERISTIC_UUID);
     if (characteristic) {
       const value = await characteristic.readValue();
 			const typedArray = new Int8Array(value.buffer);
@@ -133,6 +133,9 @@
   }
 
 </script>
+
+<button on:click={resetBatteryList}>test</button>
+<button on:click={resetLocalStorage}>test</button>
 
 <div class="cutton"style="left: 390px"/>
 
@@ -159,7 +162,7 @@
 		{#if battery_list.length === 0}
 		<div class="condition"style="background: #FFF;">
 			<div class="in-condition">
-				<h1 class="condition-number">{`${selected_battery.charge}%`}</h1>
+				<h1 class="condition-number">-%</h1>
 			</div>
 		</div>
 		{:else}
