@@ -19,8 +19,6 @@
 	import CgBattery from "svelte-icons-pack/cg/CgBattery";
 	import { Button, GradientButton, Dropdown, DropdownItem, Modal } from 'flowbite-svelte';
 	import { DarkMode } from 'flowbite-svelte';
-  import { stringify } from 'postcss';
-
 
 	let main_data = [{pos: 0, screen: 'home'}, {pos: 1, screen: 'device'}, {pos: 2, screen: 'setting'}, {pos: 3, screen: 'name'}, {pos: 4, screen: 'add'}, {pos: 5, screen: 'reconnect'}, {pos: 6, screen: 'rename'}];
 	let position = 0;
@@ -31,16 +29,13 @@
 	let setting_position = 0;
 	let setting_slideWidth;
 
-	let battery_list = [{name: '배터리 1', charge: 100}, {name : '배터리 2', charge: 75}, {name: '배터리ㅣ3', charge: 50}, {name: '4 배터리', charge: 25}, {name: '555 배', charge: 0}, {name: '배6터 리', charge: 63}];
-
-	// function resetLocalStorage() {
-	// 	battery_list.forEach((e) => {
-	// 		let JSONBatteryList = JSON.stringify(battery_list[battery_list.indexOf(e)]);
-	// 		localStorage.setItem(String(battery_list.indexOf(e)), JSONBatteryList);
-	// 	})
-	// }
+	let battery_list: any[] = [{name: '예시',charge:100}];
 
 	function resetLocalStorage() {
+		let len = localStorage.length - 4;
+		for (let i = 0; i < len; i++) {
+			localStorage.removeItem(String(i));
+		}
 		battery_list.forEach((e) => {
 			localStorage.setItem(String(battery_list.indexOf(e)), JSON.stringify(battery_list[battery_list.indexOf(e)]));
 		})
@@ -134,8 +129,8 @@
 
 </script>
 
-<button on:click={resetBatteryList}>test</button>
-<button on:click={resetLocalStorage}>test</button>
+<button on:click={resetBatteryList}>resetBatteryList</button>
+<button on:click={resetLocalStorage}>resetLocalStorage</button>
 
 <div class="cutton"style="left: 390px"/>
 
@@ -150,6 +145,9 @@
 	{#if d.pos === 0}
 	<!-- ----------------------------------------------------------------------홈------------------------------------------------------------------------------------ -->
 		<div class="selector">
+			{#if battery_list.length === 0}
+			<h1 class="battery_name"style="margin-top: 10px;">이름 없음</h1>
+			{:else}
 			<h1 class="battery_name"style="margin-top: 10px;">{selected_battery.name}<button class="battery_selector_button">
 				<Icon src={CgChevronDown} className="icon2 battery_selector menu" size="20"/>
 				<Dropdown>
@@ -158,6 +156,7 @@
 			{/each}
 			</Dropdown>
 			</button></h1>
+			{/if}
 		</div>
 		{#if battery_list.length === 0}
 		<div class="condition"style="background: #FFF;">
@@ -363,7 +362,7 @@
 		adding_battery.charge = Number(final_value);
 		battery_list.push(adding_battery);
 		reset_adding_battery();
-		// resetLocalStorage();
+		resetLocalStorage();
 		alert('Added successfully');
 		position = prev_position;
 	}} class="complete_button" color="blue" style="margin-left: 132px;">Complete<Icon src={BiCheck} size="25" className="icon"/></Button>
@@ -376,7 +375,7 @@
 		adding_battery.charge = Number(final_value);
 		battery_list.push(adding_battery);
 		reset_adding_battery();
-		// resetLocalStorage();
+		resetLocalStorage();
 		alert('성공적으로 추가되었습니다.');
 		position = prev_position;
 	}} class="complete_button" color="blue">완료<Icon src={BiCheck} size="25" className="icon"/></Button>
