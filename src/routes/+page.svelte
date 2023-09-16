@@ -48,6 +48,13 @@
 		}
 	}
 
+	(function () {
+		battery_list = [];
+		for (let i = 0; i < localStorage.length - 4; i++) {
+			battery_list.push(JSON.parse(localStorage.getItem(String(i)) || '{}'))
+		}
+	})();
+
 	let battery_count = `배터리 ${battery_list.length + 1}`;
 	let editingPos = 0;
 
