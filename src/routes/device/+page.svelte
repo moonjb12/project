@@ -11,17 +11,6 @@
     Modal,
   } from 'flowbite-svelte';
 
-  let main_data = [
-    { pos: 0, screen: 'home' },
-    { pos: 1, screen: 'device' },
-    { pos: 2, screen: 'setting' },
-    { pos: 3, screen: 'name' },
-    { pos: 4, screen: 'add' },
-    { pos: 5, screen: 'reconnect' },
-    { pos: 6, screen: 'rename' },
-  ];
-  let position = 0;
-
   let battery_list: any[] = [{ name: '예시', charge: 100 }];
 
   function resetLocalStorage() {
@@ -181,7 +170,6 @@
     <button
       on:click={() => {
         prev_position = 1;
-        position = 3;
       }}
     >
       <Icon src={FiPlus} size="30" className="icon2 plus" />
@@ -213,7 +201,6 @@
             on:click={() => {
               editingPos = battery_list.indexOf(b);
               prev_position = 1;
-              position = 6;
             }}
             class="menuitem"
             >{english ? 'Rename' : '이름 변경'}</DropdownItem
@@ -222,7 +209,6 @@
             on:click={() => {
               editingPos = battery_list.indexOf(b);
               prev_position = 1;
-              position = 5;
             }}
             class="menuitem"
             >{english ? 'Reconnect' : '재연결'}</DropdownItem
@@ -410,7 +396,7 @@
     margin-top: -35px;
   }
   :global(.warn) {
-    margin-left: 125px;
+    margin-left: 170px;
     margin-bottom: 10px;
   }
 </style>

@@ -276,10 +276,6 @@
   :global(html.dark .icon2) {
     color: #fff;
   }
-
-
-
-
   :global(html.dark .unicon) {
     filter: invert(100%);
   }

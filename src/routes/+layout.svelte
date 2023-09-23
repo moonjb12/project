@@ -8,20 +8,19 @@
   import AiOutlineSetting from "svelte-icons-pack/ai/AiOutlineSetting";
   import AiFillSetting from "svelte-icons-pack/ai/AiFillSetting";
 
-  let main_data = [
-    { pos: 0, screen: "home" },
-    { pos: 1, screen: "device" },
-    { pos: 2, screen: "setting" },
-    { pos: 3, screen: "name" },
-    { pos: 4, screen: "add" },
-    { pos: 5, screen: "reconnect" },
-    { pos: 6, screen: "rename" },
-  ];
-  let position = 0;
-
-  let setting_position = 0;
-
   let battery_list: any[] = [{ name: "예시", charge: 100 }];
+
+  let selected_screen : string;
+
+  if (typeof window !== "undefined") {
+    if (window.location.href === 'http://localhost:5173/') {
+      selected_screen = 'home';
+    } else if (window.location.href === 'http://localhost:5173/device') {
+      selected_screen = 'device';
+    } else if (window.location.href === 'http://localhost:5173/setting'){
+      selected_screen = 'setting';
+    }
+  }
 
   function resetLocalStorage() {
     let len = localStorage.length - 4;
@@ -54,7 +53,6 @@
 
   let adding_battery = { name: "", charge: 0 };
 
-  let selected_screen = main_data[0]["screen"];
   let selected_battery = battery_list[0];
 
   let reset_adding_battery = () => {
@@ -136,18 +134,44 @@
 
 <div class="bar" style="top: 743px;">
   <a href="/">
-    <button class="tab_button">
-      <Icon src={AiFillHome} className="icon up" size="50" />
+    <button class="tab_button" on:click={() => selected_screen = 'home'}>
+      {#if selected_screen === 'home'}
+      <Icon src={AiFillHome} className="icon down" size="50" />
+      <h1 class="selected_text" style="margin: 15px; top: -7px;">홈</h1>
+      {:else}
+      <Icon src={AiOutlineHome} className="icon down" size="50" />
+      <h1 class="unselected_text" style="margin: 15px; top: -7px;">홈</h1>
+      {/if}
     </button>
   </a>
   <a href="/device">
-    <button class="tab_button">
+    <button class="tab_button" on:click={() => selected_screen = 'device'}>
+      {#if selected_screen === 'device'}
+      <Icon src={IoGrid} className="unicon up" size="50" />
+      <h1 class="selected_text" style="margin: 0px -14px; top: -6px;">
+        디바이스
+      </h1>
+      {:else}
       <Icon src={BsGrid} className="unicon up" size="50" />
+      <h1 class="unselected_text" style="margin: 0px -14px; top: -6px;">
+        디바이스
+      </h1>
+      {/if}
     </button>
   </a>
   <a href="/setting">
-    <button class="tab_button">
+    <button class="tab_button" on:click={() => selected_screen = 'setting'}>
+      {#if selected_screen === 'setting'}
+      <Icon src={AiFillSetting} className="icon up" size="50" />
+      <h1 class="selected_text" style="margin: 0px 4px; top: -6px;">
+        설정
+      </h1>
+      {:else}
       <Icon src={AiOutlineSetting} className="icon up" size="50" />
+      <h1 class="unselected_text" style="margin: 0px 4px; top: -6px;">
+        설정
+      </h1>
+      {/if}
     </button>
   </a>
 </div>
@@ -167,9 +191,23 @@
     width: 43px;
     height: 72px;
     border-color: rgba(0, 0, 0, 0);
-    background: rgba(255, 0, 0, 100);
+    background: rgba(255, 0, 0, 0);
     margin: 8px 40px;
     cursor: pointer;
+  }
+  .selected_text {
+    color: #fff;
+    text-align: left;
+    font-size: 20px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .unselected_text {
+    color: #fff;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 400;
+    white-space: nowrap;
   }
 </style>
 
