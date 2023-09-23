@@ -1,26 +1,27 @@
 <script lang="ts">
-  import Icon from 'svelte-icons-pack/Icon.svelte';
-  import AiFillHome from 'svelte-icons-pack/ai/AiFillHome';
-  import AiOutlineHome from 'svelte-icons-pack/ai/AiOutlineHome';
-  import BsGrid from 'svelte-icons-pack/bs/BsGrid';
-  import IoGrid from 'svelte-icons-pack/io/IoGrid';
-  import AiOutlineSetting from 'svelte-icons-pack/ai/AiOutlineSetting';
-  import AiFillSetting from 'svelte-icons-pack/ai/AiFillSetting';
+  import "../app.postcss";
+  import Icon from "svelte-icons-pack/Icon.svelte";
+  import AiFillHome from "svelte-icons-pack/ai/AiFillHome";
+  import AiOutlineHome from "svelte-icons-pack/ai/AiOutlineHome";
+  import BsGrid from "svelte-icons-pack/bs/BsGrid";
+  import IoGrid from "svelte-icons-pack/io/IoGrid";
+  import AiOutlineSetting from "svelte-icons-pack/ai/AiOutlineSetting";
+  import AiFillSetting from "svelte-icons-pack/ai/AiFillSetting";
 
   let main_data = [
-    { pos: 0, screen: 'home' },
-    { pos: 1, screen: 'device' },
-    { pos: 2, screen: 'setting' },
-    { pos: 3, screen: 'name' },
-    { pos: 4, screen: 'add' },
-    { pos: 5, screen: 'reconnect' },
-    { pos: 6, screen: 'rename' },
+    { pos: 0, screen: "home" },
+    { pos: 1, screen: "device" },
+    { pos: 2, screen: "setting" },
+    { pos: 3, screen: "name" },
+    { pos: 4, screen: "add" },
+    { pos: 5, screen: "reconnect" },
+    { pos: 6, screen: "rename" },
   ];
   let position = 0;
 
   let setting_position = 0;
 
-  let battery_list: any[] = [{ name: '예시', charge: 100 }];
+  let battery_list: any[] = [{ name: "예시", charge: 100 }];
 
   function resetLocalStorage() {
     let len = localStorage.length - 4;
@@ -38,7 +39,7 @@
   function resetBatteryList() {
     battery_list = [];
     for (let i = 0; i < localStorage.length - 4; i++) {
-      battery_list.push(JSON.parse(localStorage.getItem(String(i)) || '{}'));
+      battery_list.push(JSON.parse(localStorage.getItem(String(i)) || "{}"));
     }
   }
 
@@ -51,31 +52,31 @@
 
   let battery_count = `배터리 ${battery_list.length + 1}`;
 
-  let adding_battery = { name: '', charge: 0 };
+  let adding_battery = { name: "", charge: 0 };
 
-  let selected_screen = main_data[0]['screen'];
+  let selected_screen = main_data[0]["screen"];
   let selected_battery = battery_list[0];
 
   let reset_adding_battery = () => {
-    adding_battery = { name: '', charge: 0 };
+    adding_battery = { name: "", charge: 0 };
     battery_count = `배터리 ${battery_list.length + 1}`;
     connected = false;
     complete = false;
-    final_value = '';
+    final_value = "";
   };
 
   let english = false;
 
   let connected = false;
   let complete = false;
-  let final_value = '';
+  let final_value = "";
 
   let device: BluetoothDevice | null = null;
   let server: BluetoothRemoteGATTServer | null = null;
   let characteristics = new Map();
 
-  const YOUR_SERVICE_UUID = 'af294c50-a8dd-81f1-dac1-f0f240b37428';
-  const YOUR_CHARACTERISTIC_UUID = 'af294c50-a8dd-81f1-dac1-f0f240b37428';
+  const YOUR_SERVICE_UUID = "af294c50-a8dd-81f1-dac1-f0f240b37428";
+  const YOUR_CHARACTERISTIC_UUID = "af294c50-a8dd-81f1-dac1-f0f240b37428";
 
   async function connectToDevice() {
     try {
@@ -87,14 +88,14 @@
       if (device && device.gatt) {
         connected = true;
         server = await device.gatt.connect();
-        console.log('Connected to the device:', device.name);
+        console.log("Connected to the device:", device.name);
 
         await cacheCharacteristics();
       } else {
-        console.error('Device or gatt object is undefined.');
+        console.error("Device or gatt object is undefined.");
       }
     } catch (error) {
-      console.error('Error connecting to the device:', error);
+      console.error("Error connecting to the device:", error);
     }
   }
 
@@ -120,7 +121,7 @@
       }
       complete = true;
     } else {
-      console.error('Characteristic is undefined.');
+      console.error("Characteristic is undefined.");
     }
   }
 
@@ -133,19 +134,28 @@
   }
 </script>
 
-<div class="bar" style="margin-top: 743px;">
-  <button on:click={() => console.log(1)} class="tab_button">
-
-  </button>
+<div class="bar" style="top: 743px;">
+  <a href="/">
+    <button class="tab_button">
+      <Icon src={AiFillHome} className="icon up" size="50" />
+    </button>
+  </a>
+  <a href="/device">
+    <button class="tab_button">
+      <Icon src={BsGrid} className="unicon up" size="50" />
+    </button>
+  </a>
+  <a href="/setting">
+    <button class="tab_button">
+      <Icon src={AiOutlineSetting} className="icon up" size="50" />
+    </button>
+  </a>
 </div>
 
-<nav>
-	<a href="/">Home</a>
-	<a href="/about">About</a>
-	<a href="/settings">Settings</a>
-</nav>
-
 <style>
+  * {
+    position: relative;
+  }
   .bar {
     width: 390px;
     height: 101px;
@@ -157,10 +167,10 @@
     width: 43px;
     height: 72px;
     border-color: rgba(0, 0, 0, 0);
-    background: rgba(0, 0, 0, 0);
+    background: rgba(255, 0, 0, 100);
     margin: 8px 40px;
     cursor: pointer;
   }
 </style>
 
-<slot></slot>
+<slot />
