@@ -11,6 +11,8 @@
     Modal,
   } from 'flowbite-svelte';
 
+  import { DarkMode } from 'flowbite-svelte';
+
   let battery_list: any[] = [{ name: '예시', charge: 100 }];
 
   function resetLocalStorage() {
@@ -129,6 +131,8 @@
   }
 </script>
 
+<DarkMode />
+
 <div class="frame">
   <div>
     <Modal bind:open={popupmodal} size="xs" autoclose>
@@ -167,7 +171,7 @@
     <h1 class="title" style="margin-left: 40px; margin-top: 50px;">
       {english ? 'Device' : '디바이스'}
     </h1>
-    <a href="/add">
+    <a href="/device/add">
     <button>
       <Icon src={FiPlus} size="30" className="icon2 plus" />
     </button>

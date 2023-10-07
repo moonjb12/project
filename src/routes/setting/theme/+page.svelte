@@ -12,17 +12,6 @@
     { pos: 5, screen: 'reconnect' },
     { pos: 6, screen: 'rename' },
   ];
-  let position = 0;
-  let duration = 400;
-  let slideWidth;
-
-  let setting_data = [
-    { pos: 0, screen: 'main' },
-    { pos: 1, screen: 'lang' },
-    { pos: 2, screen: 'theme' },
-  ];
-  let setting_position = 0;
-  let setting_slideWidth;
 
   let battery_list: any[] = [{ name: '예시', charge: 100 }];
 
@@ -61,7 +50,7 @@
   let selected_screen = main_data[0]['screen'];
   let selected_battery = battery_list[0];
 
-  let prev_position = 0;
+  let btnClass = 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-xl p-2';
 
   let reset_adding_battery = () => {
     adding_battery = { name: '', charge: 0 };
@@ -145,7 +134,7 @@
 
 <div class="frame">
 <div class="setting_title_box">
-  <a href="/setting">
+  <a href="./">
   <button>
     <Icon
       src={BiChevronLeft}
@@ -306,7 +295,7 @@
     white-space: nowrap;
   }
   :global(.darkmode) {
-    margin-top: -100px;
+    margin-top: -1000px;
     margin-left: -110px;
   }
   .setting_text {

@@ -176,6 +176,8 @@
   </a>
 </div>
 
+<slot />
+
 <style>
   * {
     position: relative;
@@ -210,5 +212,3 @@
     white-space: nowrap;
   }
 </style>
-
-<slot />

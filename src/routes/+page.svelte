@@ -1,6 +1,8 @@
 <script lang="ts">
   import Icon from 'svelte-icons-pack/Icon.svelte';
 
+  import { DarkMode } from 'flowbite-svelte';
+
   import FiPlus from 'svelte-icons-pack/fi/FiPlus';
 
   import CgChevronDown from 'svelte-icons-pack/cg/CgChevronDown';
@@ -137,6 +139,8 @@
   }
 </script>
 
+<!-- ----------------------------------------------------------------------홈------------------------------------------------------------------------------------ -->
+
 <button on:click={resetBatteryList}>resetBatteryList</button>
 <button on:click={resetLocalStorage}>resetLocalStorage</button>
 <button on:click={updateLevel}>updateLevel</button>
@@ -147,9 +151,8 @@
   }}>check</button
 >
 
-<div class="cutton" style="left: 390px" />
+<DarkMode />
 
-        <!-- ----------------------------------------------------------------------홈------------------------------------------------------------------------------------ -->
 <div class="frame">
         <div class="selector">
           {#if battery_list.length === 0}
@@ -192,10 +195,9 @@
             </div>
           </div>
         {/if}
+        <a href="/add">
         <button
           on:click={() => {
-            prev_position = 0;
-            position = 3;
             reset_adding_battery();
           }}
           style="width: 96px; height: 96px;"
@@ -238,6 +240,7 @@
             </div>
           {/if}
         </button>
+      </a>
 
 </div>
 
@@ -255,9 +258,6 @@
   }
 
   :global(html.dark) .in-condition {
-    background: #1f2937;
-  }
-  :global(html.dark) .cutton {
     background: #1f2937;
   }
   :global(html.dark .battery_more) {
@@ -354,21 +354,6 @@
   }
 
   /*메뉴*/
-
-
-
-
-
-
-
-
-  .cutton {
-    width: 1000px;
-    height: 900px;
-    background: #fff;
-    z-index: 10;
-    position: absolute;
-  }
   :global(.more) {
     position: relative;
     margin-left: 350px;

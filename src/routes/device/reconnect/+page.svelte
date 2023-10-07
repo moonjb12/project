@@ -140,7 +140,7 @@
 </script>
 
 <div class="frame">
-  <a href="/device">
+  <a href="./">
   <button
           style="margin-left: 0px;"
         >

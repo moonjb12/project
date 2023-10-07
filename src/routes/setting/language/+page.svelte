@@ -11,17 +11,6 @@
     { pos: 5, screen: 'reconnect' },
     { pos: 6, screen: 'rename' },
   ];
-  let position = 0;
-  let duration = 400;
-  let slideWidth;
-
-  let setting_data = [
-    { pos: 0, screen: 'main' },
-    { pos: 1, screen: 'lang' },
-    { pos: 2, screen: 'theme' },
-  ];
-  let setting_position = 0;
-  let setting_slideWidth;
 
   let battery_list: any[] = [{ name: '예시', charge: 32629 }];
 
@@ -144,7 +133,7 @@
 
 <div class="frame">
 <div class="setting_title_box">
-  <a href="/setting">
+  <a href="./">
   <button>
     <Icon
       src={BiChevronLeft}

@@ -155,7 +155,7 @@
         </h1>
         <input class="name_input" bind:value={battery_count} />
         {#if battery_count !== ''}
-        <a href="/add/connect">
+        <a href="/device/add/connect">
           <Button
             on:click={() => {
               adding_battery.name = battery_count;
@@ -195,18 +195,6 @@
   :global(html.dark .icon2) {
     color: #fff;
   }
-  :global(html.dark) .battery_box {
-    background: #1a2534;
-  }
-  :global(html.dark) .setting_box {
-    background: #1a2534;
-    border-top: 1px solid #374861;
-    border-bottom: 1px solid #374861;
-  }
-  :global(html.dark) .setting_title_box {
-    background: #1a2534;
-    border-bottom: 1px solid #374861;
-  }
   :global(html.dark) .title_back_text {
     color: #818181;
   }
@@ -222,118 +210,12 @@
     left: 0px;
     top: 0px;
   }
-  .selector {
-    width: 170px;
-    height: 52px;
-    background-color: #fff;
-    border: 1px solid #000;
-    position: relative;
-    left: 110px;
-    top: 56px;
-    box-shadow: 3px, 3px, 6px, 0px, rgba(0, 0, 0, 0.3);
-    border-radius: 100px;
-  }
-  .battery_name {
-    color: #000;
-    font-size: 20px;
-    font-weight: 500;
-    text-align: center;
-  }
-  .condition {
-    width: 290px;
-    height: 290px;
-    border-radius: 290px;
-    box-shadow: 10px 10px 15px 0px rgba(0, 0, 0, 0.3);
-    margin-left: 50px;
-    margin-top: 100px;
-  }
-  .in-condition {
-    width: 240px;
-    height: 240px;
-    border-radius: 240px;
-    background: #fff;
-    box-shadow: 5px 5px 10px 5px rgba(0, 0, 0, 0.15) inset;
-    left: 25px;
-    top: 25px;
-  }
-  .condition-number {
-    color: #000;
-    text-align: center;
-    font-size: 70px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-    left: 10px;
-    top: 73px;
-  }
 
   /*추가*/
 
-  .add {
-    width: 96px;
-    height: 96px;
-    border-radius: 96px;
-    box-shadow: 10px 10px 15px 0px rgba(0, 0, 0, 0.3);
-    margin-left: 150px;
-    margin-top: 70px;
-  }
-  .push_message {
-    color: #a1a1a1;
-    text-align: center;
-    font-size: 20px;
-    font-weight: 500;
-    white-space: nowrap;
-    margin-left: -50px;
-    margin-top: 50px;
-  }
 
   /*메뉴*/
 
-  .bar {
-    width: 390px;
-    height: 101px;
-    border-radius: 15px 15px 0px 0px;
-    background: #818181;
-    z-index: 1;
-  }
-  .selected_text {
-    color: #fff;
-    text-align: left;
-    font-size: 20px;
-    font-weight: 700;
-    white-space: nowrap;
-  }
-
-  .tab_button {
-    width: 43px;
-    height: 72px;
-    border-color: rgba(0, 0, 0, 0);
-    background: rgba(0, 0, 0, 0);
-    margin: 8px 40px;
-    cursor: pointer;
-  }
-  .unselected_text {
-    color: #fff;
-    text-align: center;
-    font-size: 20px;
-    font-weight: 400;
-    white-space: nowrap;
-  }
-
-  .title {
-    color: #000;
-    text-align: left;
-    font-size: 40px;
-    font-weight: 500;
-    white-space: nowrap;
-  }
-  .cutton {
-    width: 1000px;
-    height: 900px;
-    background: #fff;
-    z-index: 10;
-    position: absolute;
-  }
   :global(.more) {
     position: relative;
     margin-left: 350px;
@@ -360,25 +242,6 @@
   :global(.up) {
     position: relative;
     top: -6px;
-  }
-  .battery_box {
-    width: 220px;
-    height: 104px;
-    border-radius: 15px;
-    background: #fff;
-    box-shadow: 4px 4px 5px 0px rgba(0, 0, 0, 0.25);
-    margin-left: 80px;
-    margin-top: 40px;
-    margin-bottom: 30px;
-  }
-  .battery_text {
-    color: #5d5d5d;
-    text-align: left;
-    font-size: 15px;
-    font-weight: 400;
-    white-space: nowrap;
-    margin-left: 20px;
-    margin-top: -20px;
   }
   :global(.plus_stick) {
     margin-left: 14px;

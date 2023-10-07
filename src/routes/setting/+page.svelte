@@ -1,6 +1,7 @@
 <script lang="ts">
   import Icon from 'svelte-icons-pack/Icon.svelte';
   import BiChevronRight from 'svelte-icons-pack/bi/BiChevronRight';
+  import { DarkMode } from 'flowbite-svelte';
 
   let main_data = [
     { pos: 0, screen: 'home' },
@@ -11,17 +12,6 @@
     { pos: 5, screen: 'reconnect' },
     { pos: 6, screen: 'rename' },
   ];
-  let position = 0;
-  let duration = 400;
-  let slideWidth;
-
-  let setting_data = [
-    { pos: 0, screen: 'main' },
-    { pos: 1, screen: 'lang' },
-    { pos: 2, screen: 'theme' },
-  ];
-  let setting_position = 0;
-  let setting_slideWidth;
 
   let battery_list: any[] = [{ name: '예시', charge: 100 }];
 
@@ -53,14 +43,10 @@
   // })();
 
   let battery_count = `배터리 ${battery_list.length + 1}`;
-  let editingPos = 0;
 
   let adding_battery = { name: '', charge: 0 };
 
-  let selected_screen = main_data[0]['screen'];
   let selected_battery = battery_list[0];
-
-  let prev_position = 0;
 
   let reset_adding_battery = () => {
     adding_battery = { name: '', charge: 0 };
@@ -71,8 +57,6 @@
   };
 
   let dark = false;
-  let editing = false;
-  let popupmodal = false;
   let english = false;
 
   let connected = false;
@@ -141,6 +125,8 @@
     }
   }
 </script>
+
+<DarkMode />
 
 <div class="frame">
               <h1 class="title" style="margin-left: 40px; margin-top: 50px;">
