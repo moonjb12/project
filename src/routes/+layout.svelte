@@ -7,6 +7,8 @@
   import IoGrid from "svelte-icons-pack/io/IoGrid";
   import AiOutlineSetting from "svelte-icons-pack/ai/AiOutlineSetting";
   import AiFillSetting from "svelte-icons-pack/ai/AiFillSetting";
+  import { onMount } from 'svelte';
+
 
   let battery_list: any[] = [{ name: "예시", charge: 100 }];
 
@@ -23,7 +25,7 @@
   }
 
   function resetLocalStorage() {
-    let len = localStorage.length - 4;
+    let len = localStorage.length - 6;
     for (let i = 0; i < len; i++) {
       localStorage.removeItem(String(i));
     }
@@ -37,7 +39,7 @@
 
   function resetBatteryList() {
     battery_list = [];
-    for (let i = 0; i < localStorage.length - 4; i++) {
+    for (let i = 0; i < localStorage.length - 6; i++) {
       battery_list.push(JSON.parse(localStorage.getItem(String(i)) || "{}"));
     }
   }
@@ -51,6 +53,8 @@
 
   let battery_count = `배터리 ${battery_list.length + 1}`;
 
+  let english : Boolean;
+
   let adding_battery = { name: "", charge: 0 };
 
   let selected_battery = battery_list[0];
@@ -62,8 +66,6 @@
     complete = false;
     final_value = "";
   };
-
-  let english = false;
 
   let connected = false;
   let complete = false;
@@ -130,6 +132,10 @@
       resetLocalStorage;
     }
   }
+
+  onMount(() => [
+    english = Boolean(localStorage.getItem('english'))
+  ])
 </script>
 
 <div class="bar" style="top: 743px;">
@@ -137,10 +143,28 @@
     <button class="tab_button" on:click={() => selected_screen = 'home'}>
       {#if selected_screen === 'home'}
       <Icon src={AiFillHome} className="icon down" size="50" />
-      <h1 class="selected_text" style="margin: 15px; top: -7px;">홈</h1>
+      {#if english}
+            <h1
+              class="selected_text"
+              style="margin: 15px; top: -7px; left: -18px;"
+            >
+              Home
+            </h1>
+          {:else}
+            <h1 class="selected_text" style="margin: 15px; top: -7px;">홈</h1>
+          {/if}
       {:else}
       <Icon src={AiOutlineHome} className="icon down" size="50" />
-      <h1 class="unselected_text" style="margin: 15px; top: -7px;">홈</h1>
+      {#if english}
+            <h1
+              class="unselected_text"
+              style="margin: 15px; top: -7px; left: -18px;"
+            >
+              Home
+            </h1>
+          {:else}
+            <h1 class="unselected_text" style="margin: 15px; top: -7px;">홈</h1>
+          {/if}
       {/if}
     </button>
   </a>
@@ -148,14 +172,32 @@
     <button class="tab_button" on:click={() => selected_screen = 'device'}>
       {#if selected_screen === 'device'}
       <Icon src={IoGrid} className="unicon up" size="50" />
-      <h1 class="selected_text" style="margin: 0px -14px; top: -6px;">
-        디바이스
-      </h1>
+      {#if english}
+            <h1
+              class="selected_text"
+              style="margin: 0px -14px; top: -6px; left:6px;"
+            >
+              Device
+            </h1>
+          {:else}
+            <h1 class="selected_text" style="margin: 0px -14px; top: -6px;">
+              디바이스
+            </h1>
+          {/if}
       {:else}
       <Icon src={BsGrid} className="unicon up" size="50" />
-      <h1 class="unselected_text" style="margin: 0px -14px; top: -6px;">
-        디바이스
-      </h1>
+      {#if english}
+            <h1
+              class="unselected_text"
+              style="margin: 0px -14px; top: -6px; left: 3px;"
+            >
+              Device
+            </h1>
+          {:else}
+            <h1 class="unselected_text" style="margin: 0px -14px; top: -6px;">
+              디바이스
+            </h1>
+          {/if}
       {/if}
     </button>
   </a>
@@ -163,14 +205,32 @@
     <button class="tab_button" on:click={() => selected_screen = 'setting'}>
       {#if selected_screen === 'setting'}
       <Icon src={AiFillSetting} className="icon up" size="50" />
-      <h1 class="selected_text" style="margin: 0px 4px; top: -6px;">
-        설정
-      </h1>
+      {#if english}
+            <h1
+              class="selected_text"
+              style="margin: 0px 4px; top: -6px; left: -16px;"
+            >
+              Settings
+            </h1>
+          {:else}
+            <h1 class="selected_text" style="margin: 0px 4px; top: -6px;">
+              설정
+            </h1>
+          {/if}
       {:else}
       <Icon src={AiOutlineSetting} className="icon up" size="50" />
-      <h1 class="unselected_text" style="margin: 0px 4px; top: -6px;">
-        설정
-      </h1>
+      {#if english}
+            <h1
+              class="unselected_text"
+              style="margin: 0px 4px; top: -6px; left: -16px;"
+            >
+              Settings
+            </h1>
+          {:else}
+            <h1 class="unselected_text" style="margin: 0px 4px; top: -6px;">
+              설정
+            </h1>
+          {/if}
       {/if}
     </button>
   </a>

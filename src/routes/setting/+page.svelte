@@ -2,6 +2,7 @@
   import Icon from 'svelte-icons-pack/Icon.svelte';
   import BiChevronRight from 'svelte-icons-pack/bi/BiChevronRight';
   import { DarkMode } from 'flowbite-svelte';
+  import { onMount } from 'svelte';
 
   let main_data = [
     { pos: 0, screen: 'home' },
@@ -16,7 +17,7 @@
   let battery_list: any[] = [{ name: '예시', charge: 100 }];
 
   function resetLocalStorage() {
-    let len = localStorage.length - 4;
+    let len = localStorage.length - 6;
     for (let i = 0; i < len; i++) {
       localStorage.removeItem(String(i));
     }
@@ -30,7 +31,7 @@
 
   function resetBatteryList() {
     battery_list = [];
-    for (let i = 0; i < localStorage.length - 4; i++) {
+    for (let i = 0; i < localStorage.length - 6; i++) {
       battery_list.push(JSON.parse(localStorage.getItem(String(i)) || '{}'));
     }
   }
@@ -44,6 +45,8 @@
 
   let battery_count = `배터리 ${battery_list.length + 1}`;
 
+  let english : Boolean;
+
   let adding_battery = { name: '', charge: 0 };
 
   let selected_battery = battery_list[0];
@@ -56,8 +59,7 @@
     final_value = '';
   };
 
-  let dark = false;
-  let english = false;
+  let dark : boolean;
 
   let connected = false;
   let complete = false;
@@ -124,6 +126,15 @@
       resetLocalStorage;
     }
   }
+
+  onMount(() => {
+    if (localStorage.getItem('color-theme') === 'light') {
+      dark = false;
+    } else {
+      dark = true;
+    }
+    english = Boolean(localStorage.getItem('english'))
+  })
 </script>
 
 <DarkMode />

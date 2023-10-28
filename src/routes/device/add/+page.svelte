@@ -5,6 +5,8 @@
   import {
     Button,
   } from 'flowbite-svelte';
+  import { onMount } from 'svelte';
+  import { adding_battery } from '../../add/store';
 
   let main_data = [
     { pos: 0, screen: 'home' },
@@ -20,7 +22,7 @@
   let battery_list: any[] = [{ name: '예시', charge: 100 }];
 
   function resetLocalStorage() {
-    let len = localStorage.length - 4;
+    let len = localStorage.length - 6;
     for (let i = 0; i < len; i++) {
       localStorage.removeItem(String(i));
     }
@@ -34,40 +36,24 @@
 
   function resetBatteryList() {
     battery_list = [];
-    for (let i = 0; i < localStorage.length - 4; i++) {
+    for (let i = 0; i < localStorage.length - 6; i++) {
       battery_list.push(JSON.parse(localStorage.getItem(String(i)) || '{}'));
     }
   }
 
-  // (function () {
-  // 	battery_list = [];
-  // 	for (let i = 0; i < localStorage.length - 4; i++) {
-  // 		battery_list.push(JSON.parse(localStorage.getItem(String(i)) || '{}'))
-  // 	}
-  // })();
-
   let battery_count = `배터리 ${battery_list.length + 1}`;
-  let editingPos = 0;
 
-  let adding_battery = { name: '', charge: 0 };
+  let english : Boolean;
 
-  let selected_screen = main_data[0]['screen'];
   let selected_battery = battery_list[0];
 
-  let prev_position = 0;
-
   let reset_adding_battery = () => {
-    adding_battery = { name: '', charge: 0 };
+    $adding_battery = { name: '', charge: 0 };
     battery_count = `배터리 ${battery_list.length + 1}`;
     connected = false;
     complete = false;
     final_value = '';
   };
-
-  let dark = false;
-  let editing = false;
-  let popupmodal = false;
-  let english = false;
 
   let connected = false;
   let complete = false;
@@ -134,7 +120,13 @@
       resetLocalStorage;
     }
   }
-</script>
+
+  onMount(() => {
+    english = Boolean(localStorage.getItem('english'))
+    resetBatteryList();
+    battery_count = `배터리 ${battery_list.length + 1}`
+  })
+</script> <!-- 끼얏호우   -------------------------------------------------------------------------------------------- -->
 
 <div class="frame">
   <a href="./">
@@ -158,7 +150,7 @@
         <a href="/device/add/connect">
           <Button
             on:click={() => {
-              adding_battery.name = battery_count;
+              $adding_battery.name = battery_count;
             }}
             color="blue"
             class="next_button"><Icon src={CgArrowRight} size="40" /></Button
@@ -210,12 +202,6 @@
     left: 0px;
     top: 0px;
   }
-
-  /*추가*/
-
-
-  /*메뉴*/
-
   :global(.more) {
     position: relative;
     margin-left: 350px;
@@ -248,44 +234,10 @@
     position: relative;
     top: 14px;
   }
-  .setting_box {
-    width: 390px;
-    height: 54px;
-    border-top: 1px solid #d1d1d1;
-    border-bottom: 1px solid #d1d1d1;
-    background: #fff;
-  }
-  .setting_title {
-    width: 100px;
-    height: 20px;
-    color: #818181;
-    font-size: 15px;
-    font-weight: 500;
-    margin-left: 20px;
-    margin-top: 16px;
-    white-space: nowrap;
-  }
-  .setting_sample {
-    width: 100px;
-    height: 40px;
-    color: #818181;
-    text-align: right;
-    font-size: 15px;
-    font-weight: 500;
-    white-space: nowrap;
-    margin-left: 256px;
-    margin-top: -20px;
-  }
   :global(.setting_next) {
     margin-left: 360px;
     position: relative;
     top: -40px;
-  }
-  .setting_title_box {
-    width: 390px;
-    height: 74px;
-    border-bottom: 1px solid #dfdfdf;
-    background: #fff;
   }
   :global(.title_back) {
     margin-left: 10px;
@@ -299,18 +251,6 @@
     font-weight: 600;
     margin-left: 30px;
     margin-top: -29px;
-  }
-  .setting_title_text {
-    color: #000;
-    text-align: center;
-    font-size: 20px;
-    font-weight: 500;
-    margin-top: -10px;
-  }
-  .scroll {
-    height: 610px;
-    margin-top: 30px;
-    overflow: auto;
   }
   :global(.unicon) {
     filter: invert(100%);
@@ -327,19 +267,6 @@
   :global(.darkmode) {
     margin-top: -100px;
     margin-left: -110px;
-  }
-  .setting_text {
-    font-size: 15px;
-    font-weight: 500;
-    color: #818181;
-    margin-left: 36px;
-    margin-top: 16px;
-    margin-bottom: -20px;
-  }
-  .darkmode_button {
-    border: 1px solid #000;
-    width: 30px;
-    margin-left: 390px;
   }
   :global(.battery_selector) {
     margin-left: 130px;

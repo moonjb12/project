@@ -5,6 +5,7 @@
   import {
     Button,
   } from 'flowbite-svelte';
+  import { onMount } from 'svelte';
 
   let main_data = [
     { pos: 0, screen: 'home' },
@@ -30,7 +31,7 @@
   let battery_list: any[] = [{ name: '예시', charge: 100 }];
 
   function resetLocalStorage() {
-    let len = localStorage.length - 4;
+    let len = localStorage.length - 6;
     for (let i = 0; i < len; i++) {
       localStorage.removeItem(String(i));
     }
@@ -44,7 +45,7 @@
 
   function resetBatteryList() {
     battery_list = [];
-    for (let i = 0; i < localStorage.length - 4; i++) {
+    for (let i = 0; i < localStorage.length - 6; i++) {
       battery_list.push(JSON.parse(localStorage.getItem(String(i)) || '{}'));
     }
   }
@@ -57,6 +58,9 @@
   // })();
 
   let battery_count = `배터리 ${battery_list.length + 1}`;
+
+  let english : Boolean;
+
   let editingPos = 0;
 
   let adding_battery = { name: '', charge: 0 };
@@ -73,11 +77,6 @@
     complete = false;
     final_value = '';
   };
-
-  let dark = false;
-  let editing = false;
-  let popupmodal = false;
-  let english = false;
 
   let connected = false;
   let complete = false;
@@ -144,6 +143,10 @@
       resetLocalStorage;
     }
   }
+
+  onMount(() => {
+    english = Boolean(localStorage.getItem('english'))
+  })
 </script>
 
 <div class="frame">

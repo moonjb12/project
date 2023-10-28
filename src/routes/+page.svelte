@@ -7,9 +7,12 @@
 
   import CgChevronDown from 'svelte-icons-pack/cg/CgChevronDown';
   import {
+    Button,
     Dropdown,
     DropdownItem,
   } from 'flowbite-svelte';
+  import { onMount } from 'svelte';
+  import { selected_address } from './store';
 
   let main_data = [
     { pos: 0, screen: 'home' },
@@ -22,10 +25,10 @@
   ];
   let position = 0;
 
-  let battery_list: any[] = [{ name: '예시', charge: 100 }];
+  let battery_list: any[] = [];
 
   function resetLocalStorage() {
-    let len = localStorage.length - 4;
+    let len = localStorage.length - 6;
     for (let i = 0; i < len; i++) {
       localStorage.removeItem(String(i));
     }
@@ -38,28 +41,20 @@
   }
 
   function resetBatteryList() {
+    console.log('함수 진입!')
     battery_list = [];
-    for (let i = 0; i < localStorage.length - 4; i++) {
+    for (let i = 0; i < localStorage.length - 6; i++) {
       battery_list.push(JSON.parse(localStorage.getItem(String(i)) || '{}'));
     }
   }
 
-  // (function () {
-  // 	battery_list = [];
-  // 	for (let i = 0; i < localStorage.length - 4; i++) {
-  // 		battery_list.push(JSON.parse(localStorage.getItem(String(i)) || '{}'))
-  // 	}
-  // })();
-
   let battery_count = `배터리 ${battery_list.length + 1}`;
 
+  let english : Boolean;
 
   let adding_battery = { name: '', charge: 0 };
 
-
-  let selected_battery = battery_list[0];
-
-  let prev_position = 0;
+  $: selected_battery = battery_list[$selected_address];
 
   let reset_adding_battery = () => {
     adding_battery = { name: '', charge: 0 };
@@ -68,9 +63,6 @@
     complete = false;
     final_value = '';
   };
-
-
-  let english = false;
 
   let connected = false;
   let complete = false;
@@ -130,20 +122,17 @@
     }
   }
 
-  function updateLevel() {
-    console.log(battery_list[battery_list.indexOf(selected_battery)].charge);
-    for (let i = 0; i < 100; i++) {
-      battery_list[battery_list.indexOf(selected_battery)].charge = i;
-      resetLocalStorage;
-    }
-  }
+  onMount(() => {
+    console.log('온마운트 진입!')
+    english = Boolean(localStorage.getItem('english'))
+    resetBatteryList();
+  })
 </script>
 
 <!-- ----------------------------------------------------------------------홈------------------------------------------------------------------------------------ -->
 
 <button on:click={resetBatteryList}>resetBatteryList</button>
 <button on:click={resetLocalStorage}>resetLocalStorage</button>
-<button on:click={updateLevel}>updateLevel</button>
 <button
   on:click={() => {
     console.log(battery_list);
@@ -156,7 +145,7 @@
 <div class="frame">
         <div class="selector">
           {#if battery_list.length === 0}
-            <h1 class="battery_name" style="margin-top: 10px;">이름 없음</h1>
+            <h1 class="battery_name" style="margin-top: 10px;">{english ? 'Unknown' : '이름 없음'}</h1>
           {:else}
             <h1 class="battery_name" style="margin-top: 10px;">
               {selected_battery.name}<button class="battery_selector_button">
@@ -169,7 +158,7 @@
                   {#each battery_list as b}
                     <DropdownItem
                       class="menuitem"
-                      on:click={() => (selected_battery = b)}
+                      on:click={() => $selected_address = battery_list.indexOf(b)}
                       >{b.name}</DropdownItem
                     >
                   {/each}

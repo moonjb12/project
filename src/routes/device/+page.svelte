@@ -12,11 +12,12 @@
   } from 'flowbite-svelte';
 
   import { DarkMode } from 'flowbite-svelte';
+  import { onMount } from 'svelte';
 
-  let battery_list: any[] = [{ name: '예시', charge: 100 }];
+  let battery_list: any[] = [];
 
   function resetLocalStorage() {
-    let len = localStorage.length - 4;
+    let len = localStorage.length - 6;
     for (let i = 0; i < len; i++) {
       localStorage.removeItem(String(i));
     }
@@ -30,7 +31,7 @@
 
   function resetBatteryList() {
     battery_list = [];
-    for (let i = 0; i < localStorage.length - 4; i++) {
+    for (let i = 0; i < localStorage.length - 6; i++) {
       battery_list.push(JSON.parse(localStorage.getItem(String(i)) || '{}'));
     }
   }
@@ -43,7 +44,8 @@
   // })();
 
   let battery_count = `배터리 ${battery_list.length + 1}`;
-  let editingPos = 0;
+
+  let english : Boolean;
 
   let adding_battery = { name: '', charge: 0 };
 
@@ -60,9 +62,9 @@
   };
 
   let dark = false;
-  let editing = false;
+  let editing : boolean;
   let popupmodal = false;
-  let english = false;
+
 
   let connected = false;
   let complete = false;
@@ -129,9 +131,17 @@
       resetLocalStorage;
     }
   }
+
+  onMount(() => {
+    english = Boolean(localStorage.getItem('english'))
+    editing = Boolean(localStorage.getItem('editing'))
+    resetBatteryList();
+  })
 </script>
 
 <DarkMode />
+
+
 
 <div class="frame">
   <div>
@@ -156,7 +166,8 @@
               battery_list.indexOf(selected_battery),
               1
             );
-            // resetLocalStorage();
+            resetLocalStorage();
+            location.reload();
           }}
           color="blue"
           class="mr-2">{english ? "Yes, I'm sure" : '확인'}</Button
@@ -172,15 +183,25 @@
       {english ? 'Device' : '디바이스'}
     </h1>
     <a href="/device/add">
-    <button>
+    <button style="width: 0px; height: 0px;">
       <Icon src={FiPlus} size="30" className="icon2 plus" />
     </button>
     </a>
     <Icon src={FiMoreVertical} size="30" className="icon2 more menu" />
     <Dropdown>
-      <DropdownItem on:click={() => (editing = !editing)} class="menuitem"
-        >{english ? 'Edit' : '편집'}</DropdownItem
-      >
+      {#if editing === false}
+      <DropdownItem on:click={() => {
+        localStorage.setItem('editing', 'true')
+        location.reload();
+        }} class="menuitem"
+        >{english ? 'Edit' : '편집'}</DropdownItem>
+      {:else}
+      <DropdownItem on:click={() => {
+        localStorage.setItem('editing', '')
+        location.reload();
+        }} class="menuitem"
+        >{english ? 'Complete' : '완료'}</DropdownItem>
+      {/if}
     </Dropdown>
   </div>
   <div class="scroll">
@@ -223,7 +244,10 @@
         </Dropdown>
       {:else}
         <button
-          on:click={() => (popupmodal = true)}
+          on:click={() => {
+            popupmodal = true;
+            selected_battery = b;
+          }}
           style="width: 20px; height: 22px;	left: 200px;"
         >
           <Icon
@@ -235,7 +259,7 @@
         </button>
       {/if}
       <h1 class="battery_text">
-        {english ? `level : ${b.charge}%` : `충전 상태 : ${b.charge}%`}
+        {english ? `latest level : ${b.charge}%` : `최근 충전 상태 : ${b.charge}%`}
       </h1>
     </div>
   {/each}
@@ -355,7 +379,7 @@
     margin-top: 16px;
   }
   .scroll {
-    height: 610px;
+    height: 580px;
     margin-top: 30px;
     overflow: auto;
   }
