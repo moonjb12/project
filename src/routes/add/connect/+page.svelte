@@ -11,19 +11,6 @@
   import { onMount, setContext } from 'svelte';
   import { adding_battery } from '../store';
   import { selected_address } from '../../store';
-  import { error } from '@sveltejs/kit';
-  import { Container } from 'postcss';
-
-  let main_data = [
-    { pos: 0, screen: 'home' },
-    { pos: 1, screen: 'device' },
-    { pos: 2, screen: 'setting' },
-    { pos: 3, screen: 'name' },
-    { pos: 4, screen: 'add' },
-    { pos: 5, screen: 'reconnect' },
-    { pos: 6, screen: 'rename' },
-  ];
-  let position = 0;
 
   let battery_list: any[] = [{ name: '예시', charge: 100 }];
 
@@ -54,13 +41,7 @@
   // 	}
   // })();
 
-  let battery_count = `배터리 ${battery_list.length + 1}`;
   let english : Boolean;
-  let editingPos = 0;
-
-  let selected_battery = battery_list[0];
-
-  let prev_position = 0;
 
   let reset_adding_battery = () => {
     $adding_battery = { name: '', charge: 0 };
@@ -69,9 +50,7 @@
     final_value = '';
   };
 
-  let dark = false;
-  let editing = false;
-  let popupmodal = false;
+  let update = false;
 
   let connected = false;
   let complete = false;
@@ -82,7 +61,7 @@
   let characteristics = new Map();
 
   const YOUR_SERVICE_UUID = 'af294c50-a8dd-81f1-dac1-f0f240b37428';
-  const YOUR_CHARACTERISTIC_UUID = 'af294c50-a8dd-81f1-dac1-f0f240b37428';
+  const YOUR_CHARACTERISTIC_UUID = '4401fdb2-96c7-45af-bf2d-48ae588088ed';
 
   async function connectToDevice() {
     try {
@@ -93,6 +72,7 @@
 
       if (device && device.gatt) {
         connected = true;
+        device.addEventListener('gattserverdisconnected', onDisconnected)
         server = await device.gatt.connect();
         console.log('Connected to the device:', device.name);
 
@@ -105,7 +85,44 @@
     }
   }
 
+  function onDisconnected() {
+    console.log('> Bluetooth Device disconnected')
+    connect();
+  }
+
+  function connect() {
+    exponentialBackoff(3, 2,
+    function toTry() {
+      time('Connecting to Bluetooth Device... ');
+      return device?.gatt?.connect()
+    },
+    function success() {
+      console.log('> Bluetooth Device connected. Try disconnect it now.');
+    },
+    function fail() {
+      time('Failed to reconnect');
+    }
+    )
+  }
+  function exponentialBackoff(max: number, delay: number, toTry: any, success: { (): void; (arg0: any): any; }, fail: { (): void; (): any; }) {
+    toTry().then((result: any) => success(result))
+    .catch((_: any) => {
+      if (max === 0) {
+        return fail();
+      }
+      time('Retrying in ' + delay + 's... (' + max + ' tries left)');
+      setTimeout(() => {
+        exponentialBackoff(--max, delay * 2, toTry, success, fail);
+      }, delay * 1000);
+    })
+  }
+
+  function time(text: string) {
+    console.log('[' + new Date().toJSON().substr(11, 8) + ']' + text)
+  }
+
   async function cacheCharacteristics() {
+    // console.log('캐치 어쩌고');
     if (server) {
       const service = await server.getPrimaryService(YOUR_SERVICE_UUID);
       const characteristic = await service.getCharacteristic(
@@ -132,17 +149,43 @@
     }
   }
 
+  async function updateCharacteristicValue() {
+    console.log('업데이트!');
+    const characteristic = characteristics.get(YOUR_CHARACTERISTIC_UUID);
+    if (characteristic) {
+      const value = await characteristic.readValue();
+      const typedArray = new Int8Array(value.buffer);
+      let array = [...typedArray];
+      array.splice(array.indexOf(46));
+      for (let i = 0; i < array.length; i++) {
+        final_value += String.fromCharCode(array[i]);
+      }
+      update = true;
+      console.log(final_value + ' updateCharacteristicValue');
+    } else {
+      console.error('Characteristic is undefined.');
+    }
+  }
+
   function updateLevel() {
     setInterval(() => {
+      update = false;
       resetBatteryList();
-      final_value = '';
-      readCharacteristicValue();
-      console.log(final_value);
-      battery_list[$selected_address].charge = Number(final_value);
-      console.log(battery_list[$selected_address])
-      resetLocalStorage();
-      console.log('셋 인터벌!!!');
-    }, 1000)
+      cacheCharacteristics();
+      updateCharacteristicValue()
+      // while (!update) {
+        if (update) {
+          console.log(final_value + ' settimeout');
+          battery_list[$selected_address].charge = Number(final_value);
+          console.log(battery_list[$selected_address].charge);
+          final_value = '';
+          resetLocalStorage();
+          // break;
+        } else {
+          // continue;
+        // }
+      }
+    }, 100)
   }
 
   // function handleBatteryLevelChanged(event: any) {
@@ -170,7 +213,9 @@
 </a>
 <div>
   <GradientButton
-    on:click={connectToDevice}
+    on:click={() => {
+      connectToDevice();
+      }}
     color="cyanToBlue"
     style="margin-top: 250px; margin-left: 118.575px;"
     ><Icon src={FiBluetooth} size="24" />{english
@@ -181,7 +226,9 @@
 <div>
   {#if connected}
     <GradientButton
-      on:click={readCharacteristicValue}
+      on:click={() => {
+        readCharacteristicValue();
+      }}
       color="cyanToBlue"
       style="margin-top: 50px; margin-left: 118.575px;"
       ><Icon src={CgBattery} color="#FFF" size="24" />{english
@@ -208,7 +255,7 @@
         battery_list.push($adding_battery);
         reset_adding_battery();
         resetLocalStorage();
-        updateLevel();
+        // updateLevel();
         alert('Added successfully');
       }}
       class="complete_button"
@@ -235,6 +282,7 @@
       reset_adding_battery();
       resetLocalStorage();
       updateLevel();
+      // updateLevel();
       alert('성공적으로 추가되었습니다.');
     }}
     class="complete_button"

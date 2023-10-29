@@ -79,7 +79,7 @@
   let characteristics = new Map();
 
   const YOUR_SERVICE_UUID = 'af294c50-a8dd-81f1-dac1-f0f240b37428';
-  const YOUR_CHARACTERISTIC_UUID = 'af294c50-a8dd-81f1-dac1-f0f240b37428';
+  const YOUR_CHARACTERISTIC_UUID = '4401fdb2-96c7-45af-bf2d-48ae588088ed';
 
   async function connectToDevice() {
     try {

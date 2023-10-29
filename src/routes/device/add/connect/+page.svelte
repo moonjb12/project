@@ -53,14 +53,11 @@
   // 	}
   // })();
 
-  let battery_count = `배터리 ${battery_list.length + 1}`;
+  $: changedLevel = Number(final_value);
 
   let english : Boolean;
-  let editingPos = 0;
 
   let selected_battery = battery_list[$selected_address];
-
-  let prev_position = 0;
 
   let reset_adding_battery = () => {
     $adding_battery = { name: '', charge: 0 };
@@ -82,7 +79,7 @@
   let characteristics = new Map();
 
   const YOUR_SERVICE_UUID = 'af294c50-a8dd-81f1-dac1-f0f240b37428';
-  const YOUR_CHARACTERISTIC_UUID = 'af294c50-a8dd-81f1-dac1-f0f240b37428';
+  const YOUR_CHARACTERISTIC_UUID = '4401fdb2-96c7-45af-bf2d-48ae588088ed';
 
   async function connectToDevice() {
     try {
@@ -93,6 +90,7 @@
 
       if (device && device.gatt) {
         connected = true;
+        device.addEventListener('gattserverdisconnected', onDisconnected)
         server = await device.gatt.connect();
         console.log('Connected to the device:', device.name);
 
@@ -103,6 +101,42 @@
     } catch (error) {
       console.error('Error connecting to the device:', error);
     }
+  }
+
+  function onDisconnected() {
+    console.log('> Bluetooth Device disconnected')
+    connect();
+  }
+
+  function connect() {
+    exponentialBackoff(3, 2,
+    function toTry() {
+      time('Connecting to Bluetooth Device... ');
+      return device?.gatt?.connect()
+    },
+    function success() {
+      console.log('> Bluetooth Device connected. Try disconnect it now.');
+    },
+    function fail() {
+      time('Failed to reconnect');
+    }
+    )
+  }
+  function exponentialBackoff(max: number, delay: number, toTry: any, success: { (): void; (arg0: any): any; }, fail: { (): void; (): any; }) {
+    toTry().then((result: any) => success(result))
+    .catch((_: any) => {
+      if (max === 0) {
+        return fail();
+      }
+      time('Retrying in ' + delay + 's... (' + max + ' tries left)');
+      setTimeout(() => {
+        exponentialBackoff(--max, delay * 2, toTry, success, fail);
+      }, delay * 1000);
+    })
+  }
+
+  function time(text: string) {
+    console.log('[' + new Date().toJSON().substr(11, 8) + ']' + text)
   }
 
   async function cacheCharacteristics() {
@@ -141,10 +175,9 @@
   }
 
 
-  // function handleBatteryLevelChanged(event: any) {
-  //   let batteryLevel = event.target.value.getUint8(0);
-  //   console.log('Battery Level is ' + batteryLevel + '%')
-  // }
+  function handleBatteryLevelChanged(event : any) {
+    console.log();
+  }
 
   onMount(() => {
     english = Boolean(localStorage.getItem('english'))

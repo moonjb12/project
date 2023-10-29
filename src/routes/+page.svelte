@@ -41,7 +41,6 @@
   }
 
   function resetBatteryList() {
-    console.log('함수 진입!')
     battery_list = [];
     for (let i = 0; i < localStorage.length - 6; i++) {
       battery_list.push(JSON.parse(localStorage.getItem(String(i)) || '{}'));
@@ -123,9 +122,11 @@
   }
 
   onMount(() => {
-    console.log('온마운트 진입!')
     english = Boolean(localStorage.getItem('english'))
-    resetBatteryList();
+    setInterval(() => {
+      console.log('셋인터벌');
+      resetBatteryList();
+    }, 100);
   })
 </script>
 

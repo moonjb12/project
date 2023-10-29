@@ -6,19 +6,7 @@
     Button,
   } from 'flowbite-svelte';
   import { onMount } from 'svelte';
-
-  let main_data = [
-    { pos: 0, screen: 'home' },
-    { pos: 1, screen: 'device' },
-    { pos: 2, screen: 'setting' },
-    { pos: 3, screen: 'name' },
-    { pos: 4, screen: 'add' },
-    { pos: 5, screen: 'reconnect' },
-    { pos: 6, screen: 'rename' },
-  ];
-  let position = 0;
-  let duration = 400;
-  let slideWidth;
+  import { editingPos } from '../store';
 
   let setting_data = [
     { pos: 0, screen: 'main' },
@@ -61,22 +49,9 @@
 
   let english : Boolean;
 
-  let editingPos = 0;
-
-  let adding_battery = { name: '', charge: 0 };
-
-  let selected_screen = main_data[0]['screen'];
   let selected_battery = battery_list[0];
 
   let prev_position = 0;
-
-  let reset_adding_battery = () => {
-    adding_battery = { name: '', charge: 0 };
-    battery_count = `배터리 ${battery_list.length + 1}`;
-    connected = false;
-    complete = false;
-    final_value = '';
-  };
 
   let connected = false;
   let complete = false;
@@ -146,6 +121,7 @@
 
   onMount(() => {
     english = Boolean(localStorage.getItem('english'))
+    resetBatteryList();
   })
 </script>
 
@@ -164,21 +140,21 @@
         <h1 class="question">
           {english ? 'Input battery name' : '이름을 입력해 주세요'}
         </h1>
-        <input class="name_input" bind:value={battery_list[editingPos].name} />
+        <input class="name_input" bind:value={battery_list[$editingPos].name} />
         {#if english}
-            {#if battery_list[editingPos].name !== ''}
+            {#if battery_list[$editingPos].name !== ''}
+            <a href="./">
             <Button
               on:click={() => {
-                battery_list[editingPos].charge = Number(final_value);
-                // resetLocalStorage();
+                resetLocalStorage();
                 alert('Changed successfully');
-                position = prev_position;
               }}
               class="complete_button"
               color="blue"
               style="margin-left: 132px;"
               >Complete<Icon src={BiCheck} size="25" className="icon" /></Button
             >
+          </a>
             {:else}
             <Button
               class="complete_button"
@@ -188,18 +164,18 @@
               >Complete<Icon src={BiCheck} size="25" className="icon" /></Button
             >
           {/if}
-          {:else if battery_list[editingPos].name !== ''}
+          {:else if battery_list[$editingPos].name !== ''}
+          <a href="./">
           <Button
             on:click={() => {
-              battery_list[editingPos].charge = Number(final_value);
-              // resetLocalStorage();
+              resetLocalStorage();
               alert('성공적으로 변경되었습니다.');
-              position = prev_position;
             }}
             class="complete_button"
             color="blue"
             >완료<Icon src={BiCheck} size="25" className="icon" /></Button
           >
+          </a>
           {:else}
           <Button class="complete_button" color="blue" disabled
             >완료<Icon src={BiCheck} size="25" className="icon" /></Button

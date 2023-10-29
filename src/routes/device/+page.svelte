@@ -13,6 +13,7 @@
 
   import { DarkMode } from 'flowbite-svelte';
   import { onMount } from 'svelte';
+  import { editingPos } from './store';
 
   let battery_list: any[] = [];
 
@@ -144,41 +145,41 @@
 
 
 <div class="frame">
+  <Modal bind:open={popupmodal} size="xs" autoclose>
+    <div class="text-center">
+      <Icon
+        src={RiSystemErrorWarningLine}
+        color="#9CA3AF"
+        size="60"
+        className="warn"
+      />
+      <h3
+        class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400"
+      >
+        {english
+          ? 'Are you sure you want to delete this battery?'
+          : '이 배터리를 삭제하시겠습니까?'}
+      </h3>
+      <Button
+        on:click={() => {
+          battery_list.splice(
+            battery_list.indexOf(selected_battery),
+            1
+          );
+          resetLocalStorage();
+          location.reload();
+        }}
+        color="blue"
+        class="mr-2">{english ? "Yes, I'm sure" : '확인'}</Button
+      >
+      <Button
+        on:click={() => console.log(popupmodal)}
+        color="blue"
+        outline>{english ? 'No, cancel' : '취소'}</Button
+      >
+    </div>
+  </Modal>
   <div>
-    <Modal bind:open={popupmodal} size="xs" autoclose>
-      <div class="text-center">
-        <Icon
-          src={RiSystemErrorWarningLine}
-          color="#9CA3AF"
-          size="60"
-          className="warn"
-        />
-        <h3
-          class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400"
-        >
-          {english
-            ? 'Are you sure you want to delete this battery?'
-            : '이 배터리를 삭제하시겠습니까?'}
-        </h3>
-        <Button
-          on:click={() => {
-            battery_list.splice(
-              battery_list.indexOf(selected_battery),
-              1
-            );
-            resetLocalStorage();
-            location.reload();
-          }}
-          color="blue"
-          class="mr-2">{english ? "Yes, I'm sure" : '확인'}</Button
-        >
-        <Button
-          on:click={() => console.log(popupmodal)}
-          color="blue"
-          outline>{english ? 'No, cancel' : '취소'}</Button
-        >
-      </div>
-    </Modal>
     <h1 class="title" style="margin-left: 40px; margin-top: 50px;">
       {english ? 'Device' : '디바이스'}
     </h1>
@@ -223,6 +224,9 @@
           <a href="/device/rename">
           <DropdownItem
             class="menuitem"
+            on:click={() => {
+              $editingPos = battery_list.indexOf(b);
+            }}
             >{english ? 'Rename' : '이름 변경'}</DropdownItem
           >
         </a>
