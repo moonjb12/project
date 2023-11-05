@@ -19,13 +19,13 @@
       selected_screen = 'home';
     } else if (window.location.href === 'http://localhost:5173/device') {
       selected_screen = 'device';
-    } else if (window.location.href === 'http://localhost:5173/setting'){
+    } else if (window.location.href === 'http://localhost:5173/setting' || window.location.href === "http://localhost:5173/setting/language" || window.location.href === "http://localhost:5173/setting/theme"){
       selected_screen = 'setting';
     }
   }
 
   function resetLocalStorage() {
-    let len = localStorage.length - 6;
+    let len = localStorage.length - 3;
     for (let i = 0; i < len; i++) {
       localStorage.removeItem(String(i));
     }
@@ -39,7 +39,7 @@
 
   function resetBatteryList() {
     battery_list = [];
-    for (let i = 0; i < localStorage.length - 6; i++) {
+    for (let i = 0; i < localStorage.length - 3; i++) {
       battery_list.push(JSON.parse(localStorage.getItem(String(i)) || "{}"));
     }
   }

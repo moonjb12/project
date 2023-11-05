@@ -18,7 +18,7 @@
   let battery_list: any[] = [];
 
   function resetLocalStorage() {
-    let len = localStorage.length - 6;
+    let len = localStorage.length - 3;
     for (let i = 0; i < len; i++) {
       localStorage.removeItem(String(i));
     }
@@ -32,7 +32,7 @@
 
   function resetBatteryList() {
     battery_list = [];
-    for (let i = 0; i < localStorage.length - 6; i++) {
+    for (let i = 0; i < localStorage.length - 3; i++) {
       battery_list.push(JSON.parse(localStorage.getItem(String(i)) || '{}'));
     }
   }
@@ -228,12 +228,6 @@
               $editingPos = battery_list.indexOf(b);
             }}
             >{english ? 'Rename' : '이름 변경'}</DropdownItem
-          >
-        </a>
-        <a href="/device/reconnect">
-          <DropdownItem
-            class="menuitem"
-            >{english ? 'Reconnect' : '재연결'}</DropdownItem
           >
         </a>
           <DropdownItem

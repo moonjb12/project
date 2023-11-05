@@ -22,7 +22,7 @@
   let battery_list: any[] = [{ name: '예시', charge: 100 }];
 
   function resetLocalStorage() {
-    let len = localStorage.length - 6;
+    let len = localStorage.length - 3;
     for (let i = 0; i < len; i++) {
       localStorage.removeItem(String(i));
     }
@@ -36,7 +36,7 @@
 
   function resetBatteryList() {
     battery_list = [];
-    for (let i = 0; i < localStorage.length - 6; i++) {
+    for (let i = 0; i < localStorage.length - 3; i++) {
       battery_list.push(JSON.parse(localStorage.getItem(String(i)) || '{}'));
     }
   }

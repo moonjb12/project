@@ -17,7 +17,7 @@
   let battery_list: any[] = [{ name: '예시', charge: 100 }];
 
   function resetLocalStorage() {
-    let len = localStorage.length - 6;
+    let len = localStorage.length - 3;
     for (let i = 0; i < len; i++) {
       localStorage.removeItem(String(i));
     }
@@ -31,7 +31,7 @@
 
   function resetBatteryList() {
     battery_list = [];
-    for (let i = 0; i < localStorage.length - 6; i++) {
+    for (let i = 0; i < localStorage.length - 3; i++) {
       battery_list.push(JSON.parse(localStorage.getItem(String(i)) || '{}'));
     }
   }
@@ -165,9 +165,15 @@
                 <a href="/setting/language">
                 <button>
                   <div class="setting_box">
-                    <h1 class="setting_title">
-                      {english ? 'Language' : '언어'}
+                    {#if english}
+                    <h1 class="setting_title" style="margin-left: 30px;">
+                      Language
                     </h1>
+                    {:else}
+                    <h1 class="setting_title">
+                      언어
+                    </h1>
+                    {/if}
                     <h1 class="setting_sample" style="">
                       {english ? 'English' : '한국어'}
                     </h1>

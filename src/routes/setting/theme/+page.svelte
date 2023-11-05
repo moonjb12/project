@@ -18,7 +18,7 @@
   let battery_list: any[] = [{ name: '예시', charge: 100 }];
 
   function resetLocalStorage() {
-    let len = localStorage.length - 6;
+    let len = localStorage.length - 3;
     for (let i = 0; i < len; i++) {
       localStorage.removeItem(String(i));
     }
@@ -32,7 +32,7 @@
 
   function resetBatteryList() {
     battery_list = [];
-    for (let i = 0; i < localStorage.length - 6; i++) {
+    for (let i = 0; i < localStorage.length - 3; i++) {
       battery_list.push(JSON.parse(localStorage.getItem(String(i)) || '{}'));
     }
   }
@@ -162,9 +162,6 @@
     </h1>
     <button
       class="darkmode_button"
-      on:click={() => {
-        dark = !dark;
-      }}
     >
       <DarkMode class="darkmode" />
     </button>
@@ -313,9 +310,8 @@
     margin-bottom: -20px;
   }
   .darkmode_button {
-    border: 1px solid #000;
     width: 30px;
-    margin-left: 390px;
+    margin-left: 370px;
   }
   :global(.battery_selector) {
     margin-left: 130px;

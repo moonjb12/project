@@ -13,6 +13,7 @@
   } from 'flowbite-svelte';
   import { onMount } from 'svelte';
   import { selected_address } from './store';
+  import { update } from './store';
 
   let main_data = [
     { pos: 0, screen: 'home' },
@@ -28,7 +29,7 @@
   let battery_list: any[] = [];
 
   function resetLocalStorage() {
-    let len = localStorage.length - 6;
+    let len = localStorage.length - 3;
     for (let i = 0; i < len; i++) {
       localStorage.removeItem(String(i));
     }
@@ -42,7 +43,7 @@
 
   function resetBatteryList() {
     battery_list = [];
-    for (let i = 0; i < localStorage.length - 6; i++) {
+    for (let i = 0; i < localStorage.length - 3; i++) {
       battery_list.push(JSON.parse(localStorage.getItem(String(i)) || '{}'));
     }
   }
@@ -72,7 +73,7 @@
   let characteristics = new Map();
 
   const YOUR_SERVICE_UUID = 'af294c50-a8dd-81f1-dac1-f0f240b37428';
-  const YOUR_CHARACTERISTIC_UUID = 'af294c50-a8dd-81f1-dac1-f0f240b37428';
+  const YOUR_CHARACTERISTIC_UUID = '4401fdb2-96c7-45af-bf2d-48ae588088ed';
 
   async function connectToDevice() {
     try {
@@ -80,6 +81,8 @@
         filters: [{ services: [YOUR_SERVICE_UUID] }],
         // acceptAllDevices: true,
       });
+
+      console.log(typeof device);
 
       if (device && device.gatt) {
         connected = true;
@@ -121,12 +124,38 @@
     }
   }
 
+  async function updateCharacteristicValue() {
+    const characteristic = characteristics.get(YOUR_CHARACTERISTIC_UUID);
+    if (characteristic) {
+      const value = await characteristic.readValue();
+      const typedArray = new Int8Array(value.buffer);
+      let array = [...typedArray];
+      array.splice(array.indexOf(46));
+      for (let i = 0; i < array.length; i++) {
+        final_value += String.fromCharCode(array[i]);
+      }
+    } else {
+      console.error('Characteristic is undefined.');
+    }
+  }
+
+  function updateLevel() {
+    setInterval(() => {
+      resetBatteryList();
+      cacheCharacteristics();
+      updateCharacteristicValue().then(() => {
+        battery_list[$selected_address].charge = Number(final_value);
+        final_value = '';
+        resetLocalStorage();
+      })
+    }, 10)
+  }
+
   onMount(() => {
     english = Boolean(localStorage.getItem('english'))
     setInterval(() => {
-      console.log('셋인터벌');
       resetBatteryList();
-    }, 100);
+    }, 10);
   })
 </script>
 
@@ -169,12 +198,21 @@
           {/if}
         </div>
         {#if battery_list.length === 0}
-          <div class="condition" style="background: #FFF;">
+          <div class="condition" style="background: #FFF; height: 290px; width: 290px; margin-left: 50px; margin-top: 100px;">
             <div class="in-condition">
               <h1 class="condition-number">-%</h1>
             </div>
           </div>
         {:else}
+        <button on:click={() => {
+          connectToDevice().then(() => {
+            readCharacteristicValue();
+          }).then(() => {
+            updateLevel();
+          }).then(() => {
+            $update = 1;
+          })
+        }} style="height: 290px; width: 290px; margin-left: 50px; margin-top: 100px;">
           <div
             class="condition"
             style="background: linear-gradient(120deg, hsl({selected_battery.charge}, 100%, 50%) 0%, hsl({selected_battery.charge +
@@ -184,6 +222,10 @@
               <h1 class="condition-number">{`${selected_battery.charge}%`}</h1>
             </div>
           </div>
+        </button>
+          {#if $update === 0}
+          <h1 class="push_message" style="margin-left : 20px; margin-top : 24px; margin-bottom : -20px; font-size: 18px;">{english ? 'Press the circle to start update level' : '원을 클릭하여 충전량 업데이트 시작'}</h1>
+          {/if}
         {/if}
         <a href="/add">
         <button
@@ -200,14 +242,14 @@
                 color="#D1D1D1"
                 className="plus_stick"
               />
+            </div>
               {#if english}
-                <h1 class="push_message" style="left: -38px;">
+                <h1 class="push_message" style="margin-left: 60px;">
                   Push the button to add device
                 </h1>
               {:else}
-                <h1 class="push_message">버튼을 눌러 기기 추가</h1>
+                <h1 class="push_message" style="margin-left: 100px;;">버튼을 눌러 기기 추가</h1>
               {/if}
-            </div>
           {:else}
             <div
               class="add"
@@ -300,8 +342,8 @@
     height: 290px;
     border-radius: 290px;
     box-shadow: 10px 10px 15px 0px rgba(0, 0, 0, 0.3);
-    margin-left: 50px;
-    margin-top: 100px;
+    margin-left: 0px;
+    margin-top: 0px;
   }
   .in-condition {
     width: 240px;

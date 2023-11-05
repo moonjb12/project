@@ -12,22 +12,12 @@
   import { onMount } from 'svelte';
   import { adding_battery } from '../../../add/store';
   import { selected_address } from '../../../store';
-
-  let main_data = [
-    { pos: 0, screen: 'home' },
-    { pos: 1, screen: 'device' },
-    { pos: 2, screen: 'setting' },
-    { pos: 3, screen: 'name' },
-    { pos: 4, screen: 'add' },
-    { pos: 5, screen: 'reconnect' },
-    { pos: 6, screen: 'rename' },
-  ];
-  let position = 0;
+  import { update } from '../../../store';
 
   let battery_list: any[] = [{ name: '예시', charge: 100 }];
 
   function resetLocalStorage() {
-    let len = localStorage.length - 6;
+    let len = localStorage.length - 3;
     for (let i = 0; i < len; i++) {
       localStorage.removeItem(String(i));
     }
@@ -41,7 +31,7 @@
 
   function resetBatteryList() {
     battery_list = [];
-    for (let i = 0; i < localStorage.length - 6; i++) {
+    for (let i = 0; i < localStorage.length - 3; i++) {
       battery_list.push(JSON.parse(localStorage.getItem(String(i)) || '{}'));
     }
   }
@@ -140,6 +130,7 @@
   }
 
   async function cacheCharacteristics() {
+    // console.log('캐치 어쩌고');
     if (server) {
       const service = await server.getPrimaryService(YOUR_SERVICE_UUID);
       const characteristic = await service.getCharacteristic(
@@ -166,17 +157,31 @@
     }
   }
 
-  function updateLevel() {
-    console.log(battery_list[battery_list.indexOf(selected_battery)].charge);
-    for (let i = 0; i < 100; i++) {
-      battery_list[battery_list.indexOf(selected_battery)].charge = i;
-      resetLocalStorage;
+  async function updateCharacteristicValue() {
+    const characteristic = characteristics.get(YOUR_CHARACTERISTIC_UUID);
+    if (characteristic) {
+      const value = await characteristic.readValue();
+      const typedArray = new Int8Array(value.buffer);
+      let array = [...typedArray];
+      array.splice(array.indexOf(46));
+      for (let i = 0; i < array.length; i++) {
+        final_value += String.fromCharCode(array[i]);
+      }
+    } else {
+      console.error('Characteristic is undefined.');
     }
   }
 
-
-  function handleBatteryLevelChanged(event : any) {
-    console.log();
+  function updateLevel() {
+    setInterval(() => {
+      resetBatteryList();
+      cacheCharacteristics();
+      updateCharacteristicValue().then(() => {
+        battery_list[$selected_address].charge = Number(final_value);
+        final_value = '';
+        resetLocalStorage();
+      })
+    }, 10)
   }
 
   onMount(() => {
@@ -248,6 +253,8 @@
         battery_list.push($adding_battery);
         reset_adding_battery();
         resetLocalStorage();
+        updateLevel();
+        $update = 1;
         alert('Added successfully');
       }}
       class="complete_button"
@@ -273,6 +280,8 @@
       battery_list.push($adding_battery);
       reset_adding_battery();
       resetLocalStorage();
+      updateLevel();
+      $update = 1;
       alert('성공적으로 추가되었습니다.');
     }}
     class="complete_button"

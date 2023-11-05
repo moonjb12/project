@@ -8,14 +8,15 @@
     Button,
     GradientButton,
   } from 'flowbite-svelte';
-  import { onMount, setContext } from 'svelte';
+  import { onMount } from 'svelte';
   import { adding_battery } from '../store';
   import { selected_address } from '../../store';
+  import { update } from '../../store';
 
   let battery_list: any[] = [{ name: '예시', charge: 100 }];
 
   function resetLocalStorage() {
-    let len = localStorage.length - 6;
+    let len = localStorage.length - 3;
     for (let i = 0; i < len; i++) {
       localStorage.removeItem(String(i));
     }
@@ -29,7 +30,7 @@
 
   function resetBatteryList() {
     battery_list = [];
-    for (let i = 0; i < localStorage.length - 6; i++) {
+    for (let i = 0; i < localStorage.length - 3; i++) {
       battery_list.push(JSON.parse(localStorage.getItem(String(i)) || '{}'));
     }
   }
@@ -49,8 +50,6 @@
     complete = false;
     final_value = '';
   };
-
-  let update = false;
 
   let connected = false;
   let complete = false;
@@ -150,7 +149,6 @@
   }
 
   async function updateCharacteristicValue() {
-    console.log('업데이트!');
     const characteristic = characteristics.get(YOUR_CHARACTERISTIC_UUID);
     if (characteristic) {
       const value = await characteristic.readValue();
@@ -160,8 +158,6 @@
       for (let i = 0; i < array.length; i++) {
         final_value += String.fromCharCode(array[i]);
       }
-      update = true;
-      console.log(final_value + ' updateCharacteristicValue');
     } else {
       console.error('Characteristic is undefined.');
     }
@@ -169,23 +165,14 @@
 
   function updateLevel() {
     setInterval(() => {
-      update = false;
       resetBatteryList();
       cacheCharacteristics();
-      updateCharacteristicValue()
-      // while (!update) {
-        if (update) {
-          console.log(final_value + ' settimeout');
-          battery_list[$selected_address].charge = Number(final_value);
-          console.log(battery_list[$selected_address].charge);
-          final_value = '';
-          resetLocalStorage();
-          // break;
-        } else {
-          // continue;
-        // }
-      }
-    }, 100)
+      updateCharacteristicValue().then(() => {
+        battery_list[$selected_address].charge = Number(final_value);
+        final_value = '';
+        resetLocalStorage();
+      })
+    }, 10)
   }
 
   // function handleBatteryLevelChanged(event: any) {
@@ -255,7 +242,8 @@
         battery_list.push($adding_battery);
         reset_adding_battery();
         resetLocalStorage();
-        // updateLevel();
+        updateLevel();
+        $update = 1;
         alert('Added successfully');
       }}
       class="complete_button"
@@ -282,7 +270,7 @@
       reset_adding_battery();
       resetLocalStorage();
       updateLevel();
-      // updateLevel();
+      $update = 1;
       alert('성공적으로 추가되었습니다.');
     }}
     class="complete_button"
